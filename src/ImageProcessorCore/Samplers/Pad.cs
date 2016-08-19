@@ -15,15 +15,17 @@ namespace ImageProcessorCore
         /// <summary>
         /// Evenly pads an image to fit the new dimensions.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image to pad.</param>
         /// <param name="width">The new width.</param>
         /// <param name="height">The new height.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> Pad<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Pad<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             ResizeOptions options = new ResizeOptions

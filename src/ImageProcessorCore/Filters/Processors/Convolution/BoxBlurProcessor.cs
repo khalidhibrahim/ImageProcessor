@@ -8,10 +8,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Applies a Box blur filter to the image.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class BoxBlurProcessor<T, TC, TP> : Convolution2PassFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -30,7 +32,7 @@ namespace ImageProcessorCore.Processors
         private float[,] kernelX;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianBlurProcessor"/> class.
+        /// Initializes a new instance of the <see cref="BoxBlurProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="radius">
         /// The 'radius' value representing the size of the area to sample.

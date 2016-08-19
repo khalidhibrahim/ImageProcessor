@@ -9,8 +9,12 @@ namespace ImageProcessorCore.Processors
     /// Defines a filter that detects edges within an image using a single
     /// two dimensional matrix.
     /// </summary>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public abstract class EdgeDetectorFilter<T, TC, TP> : ConvolutionFilter<T, TC, TP>, IEdgeDetectorFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <inheritdoc/>

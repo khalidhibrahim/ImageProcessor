@@ -10,10 +10,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Provides methods to transform an image using a <see cref="Matrix3x2"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public abstract class Matrix3x2Processor<T, TC, TP> : ImageSampler<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -28,7 +30,7 @@ namespace ImageProcessorCore.Processors
             if (Matrix3x2.Invert(processMatrix, out sizeMatrix))
             {
                 Rectangle rectangle = ImageMaths.GetBoundingRectangle(sourceRectangle, sizeMatrix);
-                target.SetPixels(rectangle.Width, rectangle.Height, new T[rectangle.Width * rectangle.Height]);
+                target.SetPixels(rectangle.Width, rectangle.Height, new TC[rectangle.Width * rectangle.Height]);
             }
         }
 

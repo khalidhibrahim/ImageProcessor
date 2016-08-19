@@ -11,14 +11,16 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Provides methods that allow the flipping of an image around its center point.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class FlipProcessor<T, TC, TP> : ImageSampler<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlipProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="FlipProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="flipType">The <see cref="FlipType"/> used to perform flipping.</param>
         public FlipProcessor(FlipType flipType)
@@ -58,11 +60,11 @@ namespace ImageProcessorCore.Processors
             int width = target.Width;
             int height = target.Height;
             int halfHeight = (int)Math.Ceiling(target.Height * .5F);
-            Image<T,TC,TP> temp = new Image<T,TC,TP>(width, height);
+            Image<T, TC, TP> temp = new Image<T, TC, TP>(width, height);
             temp.ClonePixels(width, height, target.Pixels);
 
             using (T targetPixels = target.Lock())
-            using (IPixelAccessor<T, TC, TP> tempPixels = temp.Lock())
+            using (T tempPixels = temp.Lock())
             {
                 Parallel.For(
                     0,
@@ -92,11 +94,11 @@ namespace ImageProcessorCore.Processors
             int width = target.Width;
             int height = target.Height;
             int halfWidth = (int)Math.Ceiling(width * .5F);
-            Image<T,TC,TP> temp = new Image<T,TC,TP>(width, height);
+            Image<T, TC, TP> temp = new Image<T, TC, TP>(width, height);
             temp.ClonePixels(width, height, target.Pixels);
 
             using (T targetPixels = target.Lock())
-            using (IPixelAccessor<T, TC, TP> tempPixels = temp.Lock())
+            using (T tempPixels = temp.Lock())
             {
                 Parallel.For(
                     0,

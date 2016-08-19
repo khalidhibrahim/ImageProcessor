@@ -292,7 +292,7 @@ namespace ImageProcessorCore.Tests
 
             TestProfile(profile);
 
-            var thumbnail = profile.CreateThumbnail<Color, uint>();
+            var thumbnail = profile.CreateThumbnail<ColorPixelAccessor, Color, uint>();
             Assert.NotNull(thumbnail);
             Assert.Equal(256, thumbnail.Width);
             Assert.Equal(170, thumbnail.Height);

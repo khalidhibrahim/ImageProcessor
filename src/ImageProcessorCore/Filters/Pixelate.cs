@@ -11,19 +11,21 @@ namespace ImageProcessorCore
     /// <summary>
     /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Pixelates and image with the given pixel size.
         /// </summary>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="size">The size of the pixels.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> Pixelate<T, TC, TP>(this Image<T,TC,TP> source, int size = 4, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Pixelate<T, TC, TP>(this Image<T, TC, TP> source, int size = 4, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return Pixelate(source, size, source.Bounds, progressHandler);
@@ -32,6 +34,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Pixelates and image with the given pixel size.
         /// </summary>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="size">The size of the pixels.</param>
         /// <param name="rectangle">
@@ -39,8 +44,9 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> Pixelate<T, TC, TP>(this Image<T,TC,TP> source, int size, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Pixelate<T, TC, TP>(this Image<T, TC, TP> source, int size, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             if (size <= 0 || size > source.Height || size > source.Width)

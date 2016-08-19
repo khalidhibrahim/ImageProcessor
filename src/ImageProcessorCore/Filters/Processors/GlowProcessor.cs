@@ -10,13 +10,15 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> that applies a radial glow effect an <see cref="Image{T, TC, TP}"/>.
+    /// An <see cref="IImageProcessor{T,TC,TP}"/> that applies a radial glow effect an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class GlowProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
-        where TP : struct
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
+            where TP : struct
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GlowProcessor{T,TP}"/> class.
@@ -31,7 +33,7 @@ namespace ImageProcessorCore.Processors
         /// <summary>
         /// Gets or sets the glow color to apply.
         /// </summary>
-        public T GlowColor { get; set; }
+        public TC GlowColor { get; set; }
 
         /// <summary>
         /// Gets or sets the the radius.
@@ -43,7 +45,7 @@ namespace ImageProcessorCore.Processors
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
-            T glowColor = this.GlowColor;
+            TC glowColor = this.GlowColor;
             Vector2 centre = Rectangle.Center(sourceRectangle).ToVector2();
             float maxDistance = this.Radius > 0 ? Math.Min(this.Radius, sourceRectangle.Width * .5F) : sourceRectangle.Width * .5F;
             Ellipse ellipse = new Ellipse(new Point(centre), maxDistance, maxDistance);

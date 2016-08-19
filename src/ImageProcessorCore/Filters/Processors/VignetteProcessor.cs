@@ -10,16 +10,18 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> that applies a radial vignette effect to an <see cref="Image{T, TC, TP}"/>.
+    /// An <see cref="IImageProcessor{T,TC,TP}"/> that applies a radial vignette effect to an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class VignetteProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VignetteProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="VignetteProcessor{T,TC,TP}"/> class.
         /// </summary>
         public VignetteProcessor()
         {
@@ -31,7 +33,7 @@ namespace ImageProcessorCore.Processors
         /// <summary>
         /// Gets or sets the vignette color to apply.
         /// </summary>
-        public T VignetteColor { get; set; }
+        public TC VignetteColor { get; set; }
 
         /// <summary>
         /// Gets or sets the the x-radius.
@@ -48,7 +50,7 @@ namespace ImageProcessorCore.Processors
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
-            T vignetteColor = this.VignetteColor;
+            TC vignetteColor = this.VignetteColor;
             Vector2 centre = Rectangle.Center(sourceRectangle).ToVector2();
             float rX = this.RadiusX > 0 ? Math.Min(this.RadiusX, sourceRectangle.Width * .5F) : sourceRectangle.Width * .5F;
             float rY = this.RadiusY > 0 ? Math.Min(this.RadiusY, sourceRectangle.Height * .5F) : sourceRectangle.Height * .5F;
@@ -97,4 +99,3 @@ namespace ImageProcessorCore.Processors
         }
     }
 }
-

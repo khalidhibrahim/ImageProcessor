@@ -10,10 +10,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Applies a Gaussian sharpening filter to the image.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class GuassianSharpenProcessor<T, TC, TP> : Convolution2PassFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -37,7 +39,7 @@ namespace ImageProcessorCore.Processors
         private float[,] kernelX;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor"/> class.
+        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="sigma">
         /// The 'sigma' value representing the weight of the sharpening.
@@ -49,7 +51,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor"/> class.
+        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="radius">
         /// The 'radius' value representing the size of the area to sample.
@@ -61,7 +63,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor"/> class.
+        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="sigma">
         /// The 'sigma' value representing the weight of the sharpen.

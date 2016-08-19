@@ -12,10 +12,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Combines two images together by blending the pixels.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class BlendProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -69,7 +71,7 @@ namespace ImageProcessorCore.Processors
 
             float alpha = this.Value / 100F;
 
-            using (IPixelAccessor<T, TC, TP> toBlendPixels = this.blend.Lock())
+            using (T toBlendPixels = this.blend.Lock())
             using (T sourcePixels = source.Lock())
             using (T targetPixels = target.Lock())
             {

@@ -21,8 +21,9 @@ namespace ImageProcessorCore
         /// <param name="radius">The 'radius' value representing the size of the area to sample.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> BoxBlur<T, TC, TP>(this Image<T,TC,TP> source, int radius = 7, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> BoxBlur<T, TC, TP>(this Image<T, TC, TP> source, int radius = 7, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return BoxBlur(source, radius, source.Bounds, progressHandler);
@@ -40,8 +41,9 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> BoxBlur<T, TC, TP>(this Image<T,TC,TP> source, int radius, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> BoxBlur<T, TC, TP>(this Image<T, TC, TP> source, int radius, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             BoxBlurProcessor<T, TC, TP> processor = new BoxBlurProcessor<T, TC, TP>(radius);

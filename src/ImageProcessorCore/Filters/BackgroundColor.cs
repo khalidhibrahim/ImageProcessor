@@ -22,7 +22,7 @@ namespace ImageProcessorCore
         /// <param name="color">The color to set as the background.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> BackgroundColor<T, TC, TP>(this Image<T, TC, TP> source, T color, ProgressEventHandler progressHandler = null)
+        public static Image<T, TC, TP> BackgroundColor<T, TC, TP>(this Image<T, TC, TP> source, TC color, ProgressEventHandler progressHandler = null)
             where T : IPixelAccessor<TC, TP>
             where TC : IPackedVector<TP>
             where TP : struct

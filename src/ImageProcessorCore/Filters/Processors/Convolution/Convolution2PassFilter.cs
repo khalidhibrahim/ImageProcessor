@@ -11,10 +11,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Defines a filter that uses two one-dimensional matrices to perform two-pass convolution against an image.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public abstract class Convolution2PassFilter<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -33,7 +35,7 @@ namespace ImageProcessorCore.Processors
             float[,] kernelX = this.KernelX;
             float[,] kernelY = this.KernelY;
 
-            ImageBase<T, TC, TP> firstPass = new Image<T,TC,TP>(source.Width, source.Height);
+            ImageBase<T, TC, TP> firstPass = new Image<T, TC, TP>(source.Width, source.Height);
             this.ApplyConvolution(firstPass, source, sourceRectangle, startY, endY, kernelX);
             this.ApplyConvolution(target, firstPass, sourceRectangle, startY, endY, kernelY);
         }

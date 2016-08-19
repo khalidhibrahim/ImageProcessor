@@ -10,12 +10,14 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> to pixelate the colors of an <see cref="Image{T, TC, TP}"/>.
+    /// An <see cref="IImageProcessor{T,TC,TP}"/> to pixelate the colors of an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class PixelateProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -93,7 +95,7 @@ namespace ImageProcessorCore.Processors
 
                                 // Get the pixel color in the centre of the soon to be pixelated area.
                                 // ReSharper disable AccessToDisposedClosure
-                                T pixel = sourcePixels[offsetX + offsetPx, offsetY + offsetPy];
+                                TC pixel = sourcePixels[offsetX + offsetPx, offsetY + offsetPy];
 
                                 // For each pixel in the pixelate size, set it to the centre color.
                                 for (int l = offsetY; l < offsetY + size && l < maxY; l++)

@@ -13,7 +13,7 @@ namespace ImageProcessorCore
     /// </summary>
     /// <typeparam name="T">The type of objects to compare.</typeparam>
     /// <typeparam name="TP">The object specifying the type to specify precision with.</typeparam>
-    public interface IAlmostEquatable<T, TC, TP> where TP : struct, IComparable<TP>
+    public interface IAlmostEquatable<T, TP> where TP : struct, IComparable<TP>
     {
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type

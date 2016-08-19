@@ -15,14 +15,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Applies the given colorblindness simulator to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="colorBlindness">The type of color blindness simulator to apply.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> ColorBlindness<T, TC, TP>(this Image<T,TC,TP> source, ColorBlindness colorBlindness, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> ColorBlindness<T, TC, TP>(this Image<T, TC, TP> source, ColorBlindness colorBlindness, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return ColorBlindness(source, colorBlindness, source.Bounds, progressHandler);
@@ -31,8 +33,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Applies the given colorblindness simulator to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="colorBlindness">The type of color blindness simulator to apply.</param>
         /// <param name="rectangle">
@@ -40,8 +43,9 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> ColorBlindness<T, TC, TP>(this Image<T,TC,TP> source, ColorBlindness colorBlindness, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> ColorBlindness<T, TC, TP>(this Image<T, TC, TP> source, ColorBlindness colorBlindness, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             IImageProcessor<T, TC, TP> processor;

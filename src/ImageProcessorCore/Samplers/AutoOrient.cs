@@ -15,12 +15,14 @@ namespace ImageProcessorCore
         /// <summary>
         /// Adjusts an image so that its orientation is suitable for viewing.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to crop.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T,TC,TP> AutoOrient<T, TC, TP>(this Image<T,TC,TP> source, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> AutoOrient<T, TC, TP>(this Image<T, TC, TP> source, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             Orientation orientation = GetExifOrientation(source);
@@ -42,25 +44,32 @@ namespace ImageProcessorCore
                     return source.Flip(FlipType.Vertical, progressHandler);
 
                 case Orientation.LeftTop:
-                    return source
-                                .Rotate(RotateType.Rotate90, progressHandler)
-                                .Flip(FlipType.Horizontal, progressHandler);
+                    return source.Rotate(RotateType.Rotate90, progressHandler)
+                                 .Flip(FlipType.Horizontal, progressHandler);
 
                 case Orientation.RightTop:
                     return source.Rotate(RotateType.Rotate90, progressHandler);
 
                 case Orientation.RightBottom:
-                    return source
-                                .Flip(FlipType.Vertical, progressHandler)
-                                .Rotate(RotateType.Rotate270, progressHandler);
+                    return source.Flip(FlipType.Vertical, progressHandler)
+                                 .Rotate(RotateType.Rotate270, progressHandler);
 
                 case Orientation.LeftBottom:
                     return source.Rotate(RotateType.Rotate270, progressHandler);
             }
         }
 
-        private static Orientation GetExifOrientation<T, TC, TP>(Image<T,TC,TP> source)
-            where T : IPackedVector<TP>
+        /// <summary>
+        /// Returns the current EXIF orientation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TC"></typeparam>
+        /// <typeparam name="TP"></typeparam>
+        /// <param name="source"></param>
+        /// <returns>THe <see cref="Orientation"/></returns>
+        private static Orientation GetExifOrientation<T, TC, TP>(Image<T, TC, TP> source)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             if (source.ExifProfile == null)

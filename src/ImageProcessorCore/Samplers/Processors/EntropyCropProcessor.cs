@@ -12,10 +12,12 @@ namespace ImageProcessorCore.Processors
     /// Provides methods to allow the cropping of an image to preserve areas of highest
     /// entropy.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class EntropyCropProcessor<T, TC, TP> : ImageSampler<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -24,7 +26,7 @@ namespace ImageProcessorCore.Processors
         private Rectangle cropRectangle;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntropyCropProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="EntropyCropProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="threshold">The threshold to split the image. Must be between 0 and 1.</param>
         /// <exception cref="System.ArgumentException">
@@ -44,7 +46,7 @@ namespace ImageProcessorCore.Processors
         /// <inheritdoc/>
         protected override void OnApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            ImageBase<T, TC, TP> temp = new Image<T,TC,TP>(source.Width, source.Height);
+            ImageBase<T, TC, TP> temp = new Image<T, TC, TP>(source.Width, source.Height);
 
             // Detect the edges.
             new SobelProcessor<T, TC, TP>().Apply(temp, source, sourceRectangle);
@@ -56,7 +58,7 @@ namespace ImageProcessorCore.Processors
             Rectangle rectangle = ImageMaths.GetFilteredBoundingRectangle(temp, 0);
 
             // Reset the target pixel to the correct size.
-            target.SetPixels(rectangle.Width, rectangle.Height, new T[rectangle.Width * rectangle.Height]);
+            target.SetPixels(rectangle.Width, rectangle.Height, new TC[rectangle.Width * rectangle.Height]);
             this.cropRectangle = rectangle;
         }
 

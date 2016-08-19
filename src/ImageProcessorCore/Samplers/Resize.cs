@@ -15,15 +15,17 @@ namespace ImageProcessorCore
         /// <summary>
         /// Resizes an image in accordance with the given <see cref="ResizeOptions"/>.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to resize.</param>
         /// <param name="options">The resize options.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width within the resize options will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, ResizeOptions options, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Resize<T, TC, TP>(this Image<T, TC, TP> source, ResizeOptions options, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             // Ensure size is populated across both dimensions.
@@ -45,16 +47,18 @@ namespace ImageProcessorCore
         /// <summary>
         /// Resizes an image to the given width and height.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to resize.</param>
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Resize<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return Resize(source, width, height, new BicubicResampler(), false, progressHandler);
@@ -63,8 +67,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Resizes an image to the given width and height.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to resize.</param>
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
@@ -72,8 +77,9 @@ namespace ImageProcessorCore
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, bool compand, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Resize<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, bool compand, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return Resize(source, width, height, new BicubicResampler(), compand, progressHandler);
@@ -82,8 +88,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Resizes an image to the given width and height with the given sampler.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to resize.</param>
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
@@ -92,8 +99,9 @@ namespace ImageProcessorCore
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, IResampler sampler, bool compand, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Resize<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, IResampler sampler, bool compand, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return Resize(source, width, height, sampler, source.Bounds, new Rectangle(0, 0, width, height), compand, progressHandler);
@@ -103,8 +111,9 @@ namespace ImageProcessorCore
         /// Resizes an image to the given width and height with the given sampler and
         /// source rectangle.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to resize.</param>
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
@@ -119,8 +128,9 @@ namespace ImageProcessorCore
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, IResampler sampler, Rectangle sourceRectangle, Rectangle targetRectangle, bool compand = false, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> Resize<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, IResampler sampler, Rectangle sourceRectangle, Rectangle targetRectangle, bool compand = false, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             if (width == 0 && height > 0)

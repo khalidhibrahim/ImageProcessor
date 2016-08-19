@@ -2,6 +2,9 @@
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
+
+using System;
+
 namespace ImageProcessorCore.Processors
 {
     using System.Numerics;
@@ -10,10 +13,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Provides methods that allow the rotating of images.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class RotateProcessor<T, TC, TP> : Matrix3x2Processor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -34,7 +39,9 @@ namespace ImageProcessorCore.Processors
         /// <inheritdoc/>
         protected override void OnApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            if (Angle == 0 || Angle == 90 || Angle == 180 || Angle == 270)
+            const float Epsilon = .0001F;
+
+            if (Math.Abs(Angle) < Epsilon || Math.Abs(Angle - 90) < Epsilon || Math.Abs(Angle - 180) < Epsilon || Math.Abs(Angle - 270) < Epsilon)
             {
                 return;
             }
@@ -89,25 +96,26 @@ namespace ImageProcessorCore.Processors
         /// <returns></returns>
         private bool OptimizedApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source)
         {
-            if (Angle == 0)
+            const float Epsilon = .0001F;
+            if (Math.Abs(Angle) < Epsilon)
             {
                 target.ClonePixels(target.Width, target.Height, source.Pixels);
                 return true;
             }
 
-            if (Angle == 90)
+            if (Math.Abs(Angle - 90) < Epsilon)
             {
                 this.Rotate90(target, source);
                 return true;
             }
 
-            if (Angle == 180)
+            if (Math.Abs(Angle - 180) < Epsilon)
             {
                 this.Rotate180(target, source);
                 return true;
             }
 
-            if (Angle == 270)
+            if (Math.Abs(Angle - 270) < Epsilon)
             {
                 this.Rotate270(target, source);
                 return true;
@@ -125,10 +133,10 @@ namespace ImageProcessorCore.Processors
         {
             int width = source.Width;
             int height = source.Height;
-            Image<T,TC,TP> temp = new Image<T,TC,TP>(height, width);
+            Image<T, TC, TP> temp = new Image<T, TC, TP>(height, width);
 
             using (T sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TC, TP> tempPixels = temp.Lock())
+            using (T tempPixels = temp.Lock())
             {
                 Parallel.For(
                     0,
@@ -191,10 +199,10 @@ namespace ImageProcessorCore.Processors
         {
             int width = source.Width;
             int height = source.Height;
-            Image<T,TC,TP> temp = new Image<T,TC,TP>(height, width);
+            Image<T, TC, TP> temp = new Image<T, TC, TP>(height, width);
 
             using (T sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TC, TP> tempPixels = temp.Lock())
+            using (T tempPixels = temp.Lock())
             {
                 Parallel.For(
                     0,

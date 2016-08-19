@@ -15,14 +15,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Crops an image to the area of greatest entropy.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to crop.</param>
         /// <param name="threshold">The threshold for entropic density.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T,TC,TP> EntropyCrop<T, TC, TP>(this Image<T,TC,TP> source, float threshold = .5f, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> EntropyCrop<T, TC, TP>(this Image<T, TC, TP> source, float threshold = .5f, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             EntropyCropProcessor<T, TC, TP> processor = new EntropyCropProcessor<T, TC, TP>(threshold);

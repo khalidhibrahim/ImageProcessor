@@ -12,8 +12,9 @@ namespace ImageProcessorCore.Processors
     /// An <see cref="IImageProcessor{T,TC,TP}"/> to perform binary threshold filtering against an 
     /// <see cref="Image"/>. The image will be converted to grayscale before thresholding occurs.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class BinaryThresholdProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
         where T : IPixelAccessor<TC, TP>
         where TC : IPackedVector<TP>

@@ -9,10 +9,12 @@ namespace ImageProcessorCore.Processors
     /// The Prewitt operator filter.
     /// <see href="http://en.wikipedia.org/wiki/Prewitt_operator"/>
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class PrewittProcessor<T, TC, TP> : EdgeDetector2DFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <inheritdoc/>

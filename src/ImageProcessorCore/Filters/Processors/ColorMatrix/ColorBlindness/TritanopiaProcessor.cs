@@ -10,10 +10,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Converts the colors of the image recreating Tritanopia (Blue-Blind) color blindness.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class TritanopiaProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <inheritdoc/>

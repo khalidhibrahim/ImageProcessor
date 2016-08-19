@@ -8,26 +8,18 @@ namespace ImageProcessorCore.Processors
     using System.Numerics;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> to change the saturation of an <see cref="Image"/>.
+    /// An <see cref="IImageProcessor{T,TC,TP}"/> to change the saturation of an <see cref="Image{T,TC,TP}"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class SaturationProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
-        /// The saturation to be applied to the image.
-        /// </summary>
-        private readonly int saturation;
-
-        /// <summary>
-        /// The <see cref="Matrix4x4"/> used to alter the image.
-        /// </summary>
-        private Matrix4x4 matrix;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SaturationProcessor"/> class.
+        /// Initializes a new instance of the <see cref="SaturationProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="saturation">The new saturation of the image. Must be between -100 and 100.</param>
         /// <exception cref="System.ArgumentException">
@@ -36,9 +28,7 @@ namespace ImageProcessorCore.Processors
         public SaturationProcessor(int saturation)
         {
             Guard.MustBeBetweenOrEqualTo(saturation, -100, 100, nameof(saturation));
-            this.saturation = saturation;
-
-            float saturationFactor = this.saturation / 100f;
+            float saturationFactor = saturation / 100f;
 
             // Stop at -1 to prevent inversion.
             saturationFactor++;
@@ -65,10 +55,10 @@ namespace ImageProcessorCore.Processors
                 M33 = saturationComplementB + saturationFactor,
             };
 
-            this.matrix = matrix4X4;
+            this.Matrix = matrix4X4;
         }
 
         /// <inheritdoc/>
-        public override Matrix4x4 Matrix => this.matrix;
+        public override Matrix4x4 Matrix { get; }
     }
 }

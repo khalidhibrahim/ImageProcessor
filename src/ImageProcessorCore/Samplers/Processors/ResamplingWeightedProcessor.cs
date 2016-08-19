@@ -11,14 +11,16 @@ namespace ImageProcessorCore.Processors
     /// Provides methods that allow the resizing of images using various algorithms.
     /// Adapted from <see href="http://www.realtimerendering.com/resources/GraphicsGems/gemsiii/filter_rcg.c"/>
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public abstract class ResamplingWeightedProcessor<T, TC, TP> : ImageSampler<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResamplingWeightedProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="ResamplingWeightedProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="sampler">
         /// The sampler to perform the resize operation.

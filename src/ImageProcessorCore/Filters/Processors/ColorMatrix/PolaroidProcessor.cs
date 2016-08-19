@@ -10,10 +10,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Converts the colors of the image recreating an old Polaroid effect.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class PolaroidProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <inheritdoc/>
@@ -36,11 +38,11 @@ namespace ImageProcessorCore.Processors
         /// <inheritdoc/>
         protected override void AfterApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            T packedV = default(T);
+            TC packedV = default(TC);
             packedV.PackFromBytes(102, 34, 0, 255); // Very dark orange [Brown tone]
             new VignetteProcessor<T, TC, TP> { VignetteColor = packedV }.Apply(target, target, sourceRectangle);
 
-            T packedG = default(T);
+            TC packedG = default(TC);
             packedG.PackFromBytes(255, 153, 102, 178); // Light orange
             new GlowProcessor<T, TC, TP> { GlowColor = packedG, Radius = target.Width / 4F }.Apply(target, target, sourceRectangle);
         }

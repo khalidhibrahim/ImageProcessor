@@ -10,16 +10,18 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> to change the brightness of an <see cref="Image{T, TC, TP}"/>.
+    /// An <see cref="IImageProcessor{T,TC,TP}"/> to change the brightness of an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public class BrightnessProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BrightnessProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="BrightnessProcessor{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="brightness">The new brightness of the image. Must be between -100 and 100.</param>
         /// <exception cref="System.ArgumentException">

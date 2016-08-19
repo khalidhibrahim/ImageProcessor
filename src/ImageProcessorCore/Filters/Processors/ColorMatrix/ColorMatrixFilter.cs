@@ -12,10 +12,12 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// The color matrix filter. Inherit from this class to perform operation involving color matrices.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public abstract class ColorMatrixFilter<T, TC, TP> : ImageProcessor<T, TC, TP>, IColorMatrixFilter<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <inheritdoc/>
@@ -80,7 +82,7 @@ namespace ImageProcessorCore.Processors
         /// <returns>
         /// The <see cref="Color"/>.
         /// </returns>
-        private T ApplyMatrix(T color, Matrix4x4 matrix, bool compand)
+        private TC ApplyMatrix(TC color, Matrix4x4 matrix, bool compand)
         {
             Vector4 vector = color.ToVector4();
 

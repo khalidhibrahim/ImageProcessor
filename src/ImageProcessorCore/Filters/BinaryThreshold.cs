@@ -15,8 +15,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Applies binerization to the image splitting the pixels at the given threshold.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="threshold">The threshold to apply binerization of the image. Must be between 0 and 1.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
@@ -32,8 +33,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Applies binerization to the image splitting the pixels at the given threshold.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="threshold">The threshold to apply binerization of the image. Must be between 0 and 1.</param>
         /// <param name="rectangle">

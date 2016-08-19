@@ -11,8 +11,12 @@ namespace ImageProcessorCore.Processors
     /// Encapsulates properties and methods for creating processors that utilize a matrix to
     /// alter the image pixels.
     /// </summary>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
     public interface IColorMatrixFilter<T, TC, TP> : IImageProcessor<T, TC, TP>
-        where T : IPackedVector<TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>

@@ -13,16 +13,18 @@ namespace ImageProcessorCore
     public static partial class ImageExtensions
     {
         /// <summary>
-        /// Detects any edges within the image. Uses the <see cref="SobelProcessor{T,TP}"/> filter
+        /// Detects any edges within the image. Uses the <see cref="SobelProcessor{T,TC,TP}"/> filter
         /// operating in Grayscale mode.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> DetectEdges<T, TC, TP>(this Image<T,TC,TP> source, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> DetectEdges<T, TC, TP>(this Image<T, TC, TP> source, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return DetectEdges(source, source.Bounds, new SobelProcessor<T, TC, TP> { Grayscale = true }, progressHandler);
@@ -32,16 +34,18 @@ namespace ImageProcessorCore
         /// Detects any edges within the image. Uses the <see cref="SobelProcessor{T,TP}"/> filter
         /// operating in Grayscale mode.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="rectangle">
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> DetectEdges<T, TC, TP>(this Image<T,TC,TP> source, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> DetectEdges<T, TC, TP>(this Image<T, TC, TP> source, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return DetectEdges(source, rectangle, new SobelProcessor<T, TC, TP> { Grayscale = true }, progressHandler);
@@ -50,15 +54,17 @@ namespace ImageProcessorCore
         /// <summary>
         /// Detects any edges within the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="filter">The filter for detecting edges.</param>
         /// <param name="grayscale">Whether to convert the image to Grayscale first. Defaults to true.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> DetectEdges<T, TC, TP>(this Image<T,TC,TP> source, EdgeDetection filter, bool grayscale = true, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> DetectEdges<T, TC, TP>(this Image<T, TC, TP> source, EdgeDetection filter, bool grayscale = true, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return DetectEdges(source, filter, source.Bounds, grayscale, progressHandler);
@@ -67,8 +73,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Detects any edges within the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="filter">The filter for detecting edges.</param>
         /// <param name="rectangle">
@@ -77,8 +84,9 @@ namespace ImageProcessorCore
         /// <param name="grayscale">Whether to convert the image to Grayscale first. Defaults to true.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> DetectEdges<T, TC, TP>(this Image<T,TC,TP> source, EdgeDetection filter, Rectangle rectangle, bool grayscale = true, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> DetectEdges<T, TC, TP>(this Image<T, TC, TP> source, EdgeDetection filter, Rectangle rectangle, bool grayscale = true, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             IEdgeDetectorFilter<T, TC, TP> processor;
@@ -118,7 +126,7 @@ namespace ImageProcessorCore
                     break;
 
                 default:
-                    processor = new ScharrProcessor<T, TC, TP> { Grayscale = grayscale };
+                    processor = new SobelProcessor<T, TC, TP> { Grayscale = grayscale };
                     break;
             }
 
@@ -128,14 +136,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Detects any edges within the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="filter">The filter for detecting edges.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> DetectEdges<T, TC, TP>(this Image<T,TC,TP> source, IEdgeDetectorFilter<T, TC, TP> filter, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> DetectEdges<T, TC, TP>(this Image<T, TC, TP> source, IEdgeDetectorFilter<T, TC, TP> filter, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return DetectEdges(source, source.Bounds, filter, progressHandler);
@@ -144,8 +154,9 @@ namespace ImageProcessorCore
         /// <summary>
         /// Detects any edges within the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="rectangle">
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
@@ -153,8 +164,9 @@ namespace ImageProcessorCore
         /// <param name="filter">The filter for detecting edges.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T,TC,TP> DetectEdges<T, TC, TP>(this Image<T,TC,TP> source, Rectangle rectangle, IEdgeDetectorFilter<T, TC, TP> filter, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        public static Image<T, TC, TP> DetectEdges<T, TC, TP>(this Image<T, TC, TP> source, Rectangle rectangle, IEdgeDetectorFilter<T, TC, TP> filter, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             filter.OnProgress += progressHandler;
