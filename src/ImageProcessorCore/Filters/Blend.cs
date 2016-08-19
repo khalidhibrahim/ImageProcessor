@@ -21,8 +21,8 @@ namespace ImageProcessorCore
         /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
         /// <param name="percent">The opacity of the image image to blend. Must be between 0 and 100.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Blend<T, TP>(this Image<T, TP> source, ImageBase<T, TP> image, int percent = 50, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Blend<T, TC, TP>(this Image<T,TC,TP> source, ImageBase<T, TC, TP> image, int percent = 50, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -41,12 +41,12 @@ namespace ImageProcessorCore
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Blend<T, TP>(this Image<T, TP> source, ImageBase<T, TP> image, int percent, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Blend<T, TC, TP>(this Image<T,TC,TP> source, ImageBase<T, TC, TP> image, int percent, Rectangle rectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            BlendProcessor<T, TP> processor = new BlendProcessor<T, TP>(image, percent);
+            BlendProcessor<T, TC, TP> processor = new BlendProcessor<T, TC, TP>(image, percent);
             processor.OnProgress += progressHandler;
 
             try

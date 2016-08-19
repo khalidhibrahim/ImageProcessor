@@ -10,11 +10,11 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> that applies a radial vignette effect to an <see cref="Image{T,TP}"/>.
+    /// An <see cref="IImageProcessor{T,TP}"/> that applies a radial vignette effect to an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class VignetteProcessor<T, TP> : ImageProcessor<T, TP>
+    public class VignetteProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -23,7 +23,7 @@ namespace ImageProcessorCore.Processors
         /// </summary>
         public VignetteProcessor()
         {
-            T color = default(T);
+            TC color = default(TC);
             color.PackFromVector4(Color.Black.ToVector4());
             this.VignetteColor = color;
         }
@@ -44,7 +44,7 @@ namespace ImageProcessorCore.Processors
         public float RadiusY { get; set; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
@@ -71,8 +71,8 @@ namespace ImageProcessorCore.Processors
                 startY = 0;
             }
 
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                     minY,
@@ -86,7 +86,7 @@ namespace ImageProcessorCore.Processors
                                 int offsetX = x - startX;
                                 float distance = Vector2.Distance(centre, new Vector2(offsetX, offsetY));
                                 Vector4 sourceColor = sourcePixels[offsetX, offsetY].ToVector4();
-                                T packed = default(T);
+                                TC packed = default(TC);
                                 packed.PackFromVector4(Vector4.Lerp(vignetteColor.ToVector4(), sourceColor, 1 - (.9F * (distance / maxDistance))));
                                 targetPixels[offsetX, offsetY] = packed;
                             }

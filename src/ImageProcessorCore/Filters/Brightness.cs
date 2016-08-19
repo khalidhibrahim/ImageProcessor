@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,8 +20,8 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="amount">The new brightness of the image. Must be between -100 and 100.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Brightness<T, TP>(this Image<T, TP> source, int amount, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Brightness<T, TC, TP>(this Image<T,TC,TP> source, int amount, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -39,12 +39,12 @@ namespace ImageProcessorCore
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Brightness<T, TP>(this Image<T, TP> source, int amount, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Brightness<T, TC, TP>(this Image<T,TC,TP> source, int amount, Rectangle rectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            BrightnessProcessor<T, TP> processor = new BrightnessProcessor<T, TP>(amount);
+            BrightnessProcessor<T, TC, TP> processor = new BrightnessProcessor<T, TC, TP>(amount);
             processor.OnProgress += progressHandler;
 
             try

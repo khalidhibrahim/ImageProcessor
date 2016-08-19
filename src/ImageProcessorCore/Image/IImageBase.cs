@@ -5,21 +5,21 @@
 
 namespace ImageProcessorCore
 {
-    using System;
-
     /// <summary>
     /// Encapsulates the basic properties and methods required to manipulate images in varying formats.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public interface IImageBase<T, TP> : IImageBase
-        where T : IPackedVector<TP>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+    public interface IImageBase<T, TC, TP> : IImageBase
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
         /// Gets the pixels as an array of the given packed pixel format.
         /// </summary>
-        T[] Pixels { get; }
+        TC[] Pixels { get; }
 
         /// <summary>
         /// Sets the pixel array of the image to the given value.
@@ -27,13 +27,13 @@ namespace ImageProcessorCore
         /// <param name="width">The new width of the image. Must be greater than zero.</param>
         /// <param name="height">The new height of the image. Must be greater than zero.</param>
         /// <param name="pixels">The array with pixels. Must be a multiple of the width and height.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown if either <paramref name="width"/> or <paramref name="height"/> are less than or equal to 0.
         /// </exception>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// Thrown if the <paramref name="pixels"/> length is not equal to Width * Height.
         /// </exception>
-        void SetPixels(int width, int height, T[] pixels);
+        void SetPixels(int width, int height, TC[] pixels);
 
         /// <summary>
         /// Sets the pixel array of the image to the given value, creating a copy of 
@@ -42,13 +42,13 @@ namespace ImageProcessorCore
         /// <param name="width">The new width of the image. Must be greater than zero.</param>
         /// <param name="height">The new height of the image. Must be greater than zero.</param>
         /// <param name="pixels">The array with pixels. Must be a multiple of four times the width and height.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown if either <paramref name="width"/> or <paramref name="height"/> are less than or equal to 0.
         /// </exception>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// Thrown if the <paramref name="pixels"/> length is not equal to Width * Height.
         /// </exception>
-        void ClonePixels(int width, int height, T[] pixels);
+        void ClonePixels(int width, int height, TC[] pixels);
 
         /// <summary>
         /// Locks the image providing access to the pixels.
@@ -56,8 +56,8 @@ namespace ImageProcessorCore
         /// It is imperative that the accessor is correctly disposed off after use.
         /// </remarks>
         /// </summary>
-        /// <returns>The <see cref="IPixelAccessor"/></returns>
-        IPixelAccessor<T, TP> Lock();
+        /// <returns>The <see cref="T"/></returns>
+        T Lock();
     }
 
     /// <summary>

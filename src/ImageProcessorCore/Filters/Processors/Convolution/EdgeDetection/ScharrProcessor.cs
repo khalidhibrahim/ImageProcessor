@@ -11,7 +11,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class ScharrProcessor<T, TP> : EdgeDetector2DFilter<T, TP>
+    public class ScharrProcessor<T, TC, TP> : EdgeDetector2DFilter<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {

@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -21,7 +21,7 @@ namespace ImageProcessorCore
         /// <param name="flipType">The <see cref="FlipType"/> to perform the flip.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TP> RotateFlip<T, TP>(this Image<T, TP> source, RotateType rotateType, FlipType flipType, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> RotateFlip<T, TC, TP>(this Image<T,TC,TP> source, RotateType rotateType, FlipType flipType, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {

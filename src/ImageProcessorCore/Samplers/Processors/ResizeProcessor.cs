@@ -17,7 +17,7 @@ namespace ImageProcessorCore.Processors
     /// </remarks>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class ResizeProcessor<T, TP> : ResamplingWeightedProcessor<T, TP>
+    public class ResizeProcessor<T, TC, TP> : ResamplingWeightedProcessor<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -33,7 +33,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             // Jump out, we'll deal with that later.
             if (source.Bounds == target.Bounds && sourceRectangle == targetRectangle)
@@ -62,8 +62,8 @@ namespace ImageProcessorCore.Processors
                 float widthFactor = sourceRectangle.Width / (float)targetRectangle.Width;
                 float heightFactor = sourceRectangle.Height / (float)targetRectangle.Height;
 
-                using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-                using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+                using (T sourcePixels = source.Lock())
+                using (T targetPixels = target.Lock())
                 {
                     Parallel.For(
                         minY,
@@ -92,10 +92,10 @@ namespace ImageProcessorCore.Processors
             // A 2-pass 1D algorithm appears to be faster than splitting a 1-pass 2D algorithm 
             // First process the columns. Since we are not using multiple threads startY and endY
             // are the upper and lower bounds of the source rectangle.
-            Image<T, TP> firstPass = new Image<T, TP>(target.Width, source.Height);
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> firstPassPixels = firstPass.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            Image<T,TC,TP> firstPass = new Image<T,TC,TP>(target.Width, source.Height);
+            using (T sourcePixels = source.Lock())
+            using (IPixelAccessor<T, TC, TP> firstPassPixels = firstPass.Lock())
+            using (T targetPixels = target.Lock())
             {
                 minX = Math.Max(0, startX);
                 maxX = Math.Min(width, endX);

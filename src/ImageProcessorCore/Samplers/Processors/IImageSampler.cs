@@ -8,8 +8,9 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Acts as a marker for generic parameters that require an image sampler.
     /// </summary>
-    public interface IImageSampler<T, TP> : IImageProcessor<T, TP>
-        where T : IPackedVector<TP>
+    public interface IImageSampler<T, TC, TP> : IImageProcessor<T, TC, TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
     }

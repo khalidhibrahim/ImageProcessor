@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,8 +20,8 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="degrees">The angle in degrees to adjust the image.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Hue<T, TP>(this Image<T, TP> source, float degrees, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Hue<T, TC, TP>(this Image<T,TC,TP> source, float degrees, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -39,12 +39,12 @@ namespace ImageProcessorCore
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Hue<T, TP>(this Image<T, TP> source, float degrees, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Hue<T, TC, TP>(this Image<T,TC,TP> source, float degrees, Rectangle rectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            HueProcessor<T, TP> processor = new HueProcessor<T, TP>(degrees);
+            HueProcessor<T, TC, TP> processor = new HueProcessor<T, TC, TP>(degrees);
             processor.OnProgress += progressHandler;
 
             try

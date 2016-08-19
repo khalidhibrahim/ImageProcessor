@@ -14,14 +14,14 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class BlendProcessor<T, TP> : ImageProcessor<T, TP>
+    public class BlendProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
         /// The image to blend.
         /// </summary>
-        private readonly ImageBase<T, TP> blend;
+        private readonly ImageBase<T, TC, TP> blend;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlendProcessor{T,TP}"/> class.
@@ -31,7 +31,7 @@ namespace ImageProcessorCore.Processors
         /// Disposal of this image is the responsibility of the developer.
         /// </param>
         /// <param name="alpha">The opacity of the image to blend. Between 0 and 100.</param>
-        public BlendProcessor(ImageBase<T, TP> image, int alpha = 100)
+        public BlendProcessor(ImageBase<T, TC, TP> image, int alpha = 100)
         {
             Guard.MustBeBetweenOrEqualTo(alpha, 0, 100, nameof(alpha));
             this.blend = image;
@@ -44,7 +44,7 @@ namespace ImageProcessorCore.Processors
         public int Value { get; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
@@ -69,9 +69,9 @@ namespace ImageProcessorCore.Processors
 
             float alpha = this.Value / 100F;
 
-            using (IPixelAccessor<T, TP> toBlendPixels = this.blend.Lock())
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (IPixelAccessor<T, TC, TP> toBlendPixels = this.blend.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                     minY,
@@ -96,7 +96,7 @@ namespace ImageProcessorCore.Processors
                                     }
                                 }
 
-                                T packed = default(T);
+                                TC packed = default(TC);
                                 packed.PackFromVector4(color);
                                 targetPixels[offsetX, offsetY] = packed;
                             }

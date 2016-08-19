@@ -12,7 +12,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class LomographProcessor<T, TP> : ColorMatrixFilter<T, TP>
+    public class LomographProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -28,11 +28,11 @@ namespace ImageProcessorCore.Processors
         };
 
         /// <inheritdoc/>
-        protected override void AfterApply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void AfterApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            T packed = default(T);
+            TC packed = default(TC);
             packed.PackFromBytes(0, 10, 0, 255); // Very dark (mostly black) lime green.
-            new VignetteProcessor<T, TP> { VignetteColor = packed }.Apply(target, target, sourceRectangle);
+            new VignetteProcessor<T, TC, TP> { VignetteColor = packed }.Apply(target, target, sourceRectangle);
         }
     }
 }

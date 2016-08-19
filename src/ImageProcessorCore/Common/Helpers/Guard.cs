@@ -35,7 +35,7 @@ namespace ImageProcessorCore
         /// <param name="message">
         /// The error message, if any to add to the exception.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// <paramref name="target"/> is null
         /// </exception>
         public static void NotNull(object target, string parameterName, string message = "")
@@ -58,10 +58,10 @@ namespace ImageProcessorCore
         /// </summary>
         /// <param name="target">The target string, which should be checked against being null or empty.</param>
         /// <param name="parameterName">Name of the parameter.</param>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// <paramref name="target"/> is null.
         /// </exception>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="target"/> is
         /// empty or contains only blanks.
         /// </exception>
@@ -86,7 +86,7 @@ namespace ImageProcessorCore
         /// <param name="max">The maximum value.</param>
         /// <param name="parameterName">The name of the parameter that is to be checked.</param>
         /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="value"/> is greater than the maximum value.
         /// </exception>
         public static void MustBeLessThan<TValue>(TValue value, TValue max, string parameterName)
@@ -108,7 +108,7 @@ namespace ImageProcessorCore
         /// <param name="max">The maximum value.</param>
         /// <param name="parameterName">The name of the parameter that is to be checked.</param>
         /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="value"/> is greater than the maximum value.
         /// </exception>
         public static void MustBeLessThanOrEqualTo<TValue>(TValue value, TValue max, string parameterName)
@@ -130,7 +130,7 @@ namespace ImageProcessorCore
         /// <param name="min">The minimum value.</param>
         /// <param name="parameterName">The name of the parameter that is to be checked.</param>
         /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="value"/> is less than the minimum value.
         /// </exception>
         public static void MustBeGreaterThan<TValue>(TValue value, TValue min, string parameterName)
@@ -152,7 +152,7 @@ namespace ImageProcessorCore
         /// <param name="min">The minimum value.</param>
         /// <param name="parameterName">The name of the parameter that is to be checked.</param>
         /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="value"/> is less than the minimum value.
         /// </exception>
         public static void MustBeGreaterThanOrEqualTo<TValue>(TValue value, TValue min, string parameterName)
@@ -175,7 +175,7 @@ namespace ImageProcessorCore
         /// <param name="max">The maximum value.</param>
         /// <param name="parameterName">The name of the parameter that is to be checked.</param>
         /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="value"/> is less than the minimum value of greater than the maximum value.
         /// </exception>
         public static void MustBeBetweenOrEqualTo<TValue>(TValue value, TValue min, TValue max, string parameterName)
@@ -202,7 +202,7 @@ namespace ImageProcessorCore
         /// <param name="message">
         /// The error message, if any to add to the exception.
         /// </param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="target"/> is null
         /// </exception>
         public static void IsTrue(bool target, string parameterName, string message = "")
@@ -231,7 +231,7 @@ namespace ImageProcessorCore
         /// <param name="message">
         /// The error message, if any to add to the exception.
         /// </param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="target"/> is null
         /// </exception>
         public static void IsFalse(bool target, string parameterName, string message = "")

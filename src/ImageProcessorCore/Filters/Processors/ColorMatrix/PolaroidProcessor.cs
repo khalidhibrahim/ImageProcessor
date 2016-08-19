@@ -12,7 +12,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class PolaroidProcessor<T, TP> : ColorMatrixFilter<T, TP>
+    public class PolaroidProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -34,15 +34,15 @@ namespace ImageProcessorCore.Processors
         };
 
         /// <inheritdoc/>
-        protected override void AfterApply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void AfterApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
             T packedV = default(T);
             packedV.PackFromBytes(102, 34, 0, 255); // Very dark orange [Brown tone]
-            new VignetteProcessor<T, TP> { VignetteColor = packedV }.Apply(target, target, sourceRectangle);
+            new VignetteProcessor<T, TC, TP> { VignetteColor = packedV }.Apply(target, target, sourceRectangle);
 
             T packedG = default(T);
             packedG.PackFromBytes(255, 153, 102, 178); // Light orange
-            new GlowProcessor<T, TP> { GlowColor = packedG, Radius = target.Width / 4F }.Apply(target, target, sourceRectangle);
+            new GlowProcessor<T, TC, TP> { GlowColor = packedG, Radius = target.Width / 4F }.Apply(target, target, sourceRectangle);
         }
     }
 }

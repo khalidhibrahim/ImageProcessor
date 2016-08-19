@@ -14,10 +14,12 @@ namespace ImageProcessorCore.Quantizers
     /// Encapsulates methods to create a quantized image based upon the given palette.
     /// <see href="http://msdn.microsoft.com/en-us/library/aa479306.aspx"/>
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class PaletteQuantizer<T, TP> : Quantizer<T, TP>
-        where T : IPackedVector<TP>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+    public class PaletteQuantizer<T, TC, TP> : Quantizer<T, TC, TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -28,25 +30,25 @@ namespace ImageProcessorCore.Quantizers
         /// <summary>
         /// List of all colors in the palette
         /// </summary>
-        private T[] colors;
+        private TC[] colors;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PaletteQuantizer{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="PaletteQuantizer{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="palette">
         /// The color palette. If none is given this will default to the web safe colors defined 
         /// in the CSS Color Module Level 4.
         /// </param>
-        public PaletteQuantizer(T[] palette = null)
+        public PaletteQuantizer(TC[] palette = null)
             : base(true)
         {
             if (palette == null)
             {
                 Color[] constants = ColorConstants.WebSafeColors;
-                List<T> safe = new List<T> { default(T) };
+                List<TC> safe = new List<TC> { default(TC) };
                 foreach (Color c in constants)
                 {
-                    T packed = default(T);
+                    TC packed = default(TC);
                     packed.PackFromVector4(c.ToVector4());
                     safe.Add(packed);
                 }
@@ -60,14 +62,14 @@ namespace ImageProcessorCore.Quantizers
         }
 
         /// <inheritdoc/>
-        public override QuantizedImage<T, TP> Quantize(ImageBase<T, TP> image, int maxColors)
+        public override QuantizedImage<T, TC, TP> Quantize(ImageBase<T, TC, TP> image, int maxColors)
         {
             Array.Resize(ref this.colors, maxColors.Clamp(1, 256));
             return base.Quantize(image, maxColors);
         }
 
         /// <inheritdoc/>
-        protected override byte QuantizePixel(T pixel)
+        protected override byte QuantizePixel(TC pixel)
         {
             byte colorIndex = 0;
             string colorHash = pixel.ToString();
@@ -137,7 +139,7 @@ namespace ImageProcessorCore.Quantizers
         }
 
         /// <inheritdoc/>
-        protected override List<T> GetPalette()
+        protected override List<TC> GetPalette()
         {
             return this.colors.ToList();
         }

@@ -12,7 +12,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class SaturationProcessor<T, TP> : ColorMatrixFilter<T, TP>
+    public class SaturationProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -30,7 +30,7 @@ namespace ImageProcessorCore.Processors
         /// Initializes a new instance of the <see cref="SaturationProcessor"/> class.
         /// </summary>
         /// <param name="saturation">The new saturation of the image. Must be between -100 and 100.</param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="saturation"/> is less than -100 or is greater than 100.
         /// </exception>
         public SaturationProcessor(int saturation)

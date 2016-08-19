@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,8 +20,8 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="mode">The formula to apply to perform the operation.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Grayscale<T, TP>(this Image<T, TP> source, GrayscaleMode mode = GrayscaleMode.Bt709, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Grayscale<T, TC, TP>(this Image<T,TC,TP> source, GrayscaleMode mode = GrayscaleMode.Bt709, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -39,14 +39,14 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="mode">The formula to apply to perform the operation.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> Grayscale<T, TP>(this Image<T, TP> source, Rectangle rectangle, GrayscaleMode mode = GrayscaleMode.Bt709, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> Grayscale<T, TC, TP>(this Image<T,TC,TP> source, Rectangle rectangle, GrayscaleMode mode = GrayscaleMode.Bt709, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            IImageProcessor<T, TP> processor = mode == GrayscaleMode.Bt709
-                ? (IImageProcessor<T, TP>)new GrayscaleBt709Processor<T, TP>()
-                : new GrayscaleBt601Processor<T, TP>();
+            IImageProcessor<T, TC, TP> processor = mode == GrayscaleMode.Bt709
+                ? (IImageProcessor<T, TC, TP>)new GrayscaleBt709Processor<T, TC, TP>()
+                : new GrayscaleBt601Processor<T, TC, TP>();
 
             processor.OnProgress += progressHandler;
 

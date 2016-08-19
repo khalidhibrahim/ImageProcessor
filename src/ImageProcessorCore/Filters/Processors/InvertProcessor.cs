@@ -10,16 +10,16 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> to invert the colors of an <see cref="Image{T,TP}"/>.
+    /// An <see cref="IImageProcessor{T,TP}"/> to invert the colors of an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class InvertProcessor<T, TP> : ImageProcessor<T, TP>
+    public class InvertProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
@@ -42,8 +42,8 @@ namespace ImageProcessorCore.Processors
                 startY = 0;
             }
 
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                     minY,
@@ -58,7 +58,7 @@ namespace ImageProcessorCore.Processors
                                 Vector4 color = sourcePixels[offsetX, offsetY].ToVector4();
                                 Vector3 vector = inverseVector - new Vector3(color.X, color.Y, color.Z);
 
-                                T packed = default(T);
+                                TC packed = default(TC);
                                 packed.PackFromVector4(new Vector4(vector, color.W));
                                 targetPixels[offsetX, offsetY] = packed;
                             }

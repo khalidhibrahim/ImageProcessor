@@ -164,7 +164,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        public static Rectangle GetFilteredBoundingRectangle<T, TP>(ImageBase<T, TP> bitmap, float componentValue, RgbaComponent channel = RgbaComponent.B)
+        public static Rectangle GetFilteredBoundingRectangle<T, TC, TP>(ImageBase<T, TC, TP> bitmap, float componentValue, RgbaComponent channel = RgbaComponent.B)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -174,7 +174,7 @@ namespace ImageProcessorCore
             Point topLeft = new Point();
             Point bottomRight = new Point();
 
-            Func<IPixelAccessor<T, TP>, int, int, float, bool> delegateFunc;
+            Func<IPixelAccessor<T, TC, TP>, int, int, float, bool> delegateFunc;
 
             // Determine which channel to check against
             switch (channel)
@@ -196,7 +196,7 @@ namespace ImageProcessorCore
                     break;
             }
 
-            Func<IPixelAccessor<T, TP>, int> getMinY = pixels =>
+            Func<IPixelAccessor<T, TC, TP>, int> getMinY = pixels =>
             {
                 for (int y = 0; y < height; y++)
                 {
@@ -212,7 +212,7 @@ namespace ImageProcessorCore
                 return 0;
             };
 
-            Func<IPixelAccessor<T, TP>, int> getMaxY = pixels =>
+            Func<IPixelAccessor<T, TC, TP>, int> getMaxY = pixels =>
             {
                 for (int y = height - 1; y > -1; y--)
                 {
@@ -228,7 +228,7 @@ namespace ImageProcessorCore
                 return height;
             };
 
-            Func<IPixelAccessor<T, TP>, int> getMinX = pixels =>
+            Func<IPixelAccessor<T, TC, TP>, int> getMinX = pixels =>
             {
                 for (int x = 0; x < width; x++)
                 {
@@ -244,7 +244,7 @@ namespace ImageProcessorCore
                 return 0;
             };
 
-            Func<IPixelAccessor<T, TP>, int> getMaxX = pixels =>
+            Func<IPixelAccessor<T, TC, TP>, int> getMaxX = pixels =>
             {
                 for (int x = width - 1; x > -1; x--)
                 {
@@ -260,7 +260,7 @@ namespace ImageProcessorCore
                 return height;
             };
 
-            using (IPixelAccessor<T, TP> bitmapPixels = bitmap.Lock())
+            using (IPixelAccessor<T, TC, TP> bitmapPixels = bitmap.Lock())
             {
                 topLeft.Y = getMinY(bitmapPixels);
                 topLeft.X = getMinX(bitmapPixels);

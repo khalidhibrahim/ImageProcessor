@@ -103,14 +103,14 @@ namespace ImageProcessorCore
         /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam> 
         /// <param name="image">The image</param>
         /// <returns>The <see cref="IPixelAccessor"/></returns>
-        public IPixelAccessor<T, TP> GetPixelAccessor<T, TP>(IImageBase image)
+        public IPixelAccessor<T, TC, TP> GetPixelAccessor<T, TC, TP>(IImageBase image)
             where T : IPackedVector<TP>
             where TP : struct
         {
             Type packed = typeof(T);
             if (this.pixelAccessors.ContainsKey(packed))
             {
-                return (IPixelAccessor<T, TP>)this.pixelAccessors[packed].Invoke(image);
+                return (IPixelAccessor<T, TC, TP>)this.pixelAccessors[packed].Invoke(image);
             }
 
             throw new NotSupportedException($"PixelAccessor cannot be loaded for {packed}:");

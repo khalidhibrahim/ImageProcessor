@@ -14,16 +14,18 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Reads the specified scanline.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="scanline">The scanline.</param>
         /// <param name="pixels">The pixels to read the image row to.</param>
         /// <param name="header">
         /// The header, which contains information about the png file, like
         /// the width of the image and the height.
         /// </param>
-        void ReadScanline<T, TP>(byte[] scanline, T[] pixels, PngHeader header)
-            where T : IPackedVector<TP>
+        void ReadScanline<T, TC, TP>(byte[] scanline, TC[] pixels, PngHeader header)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct;
     }
 }

@@ -60,21 +60,23 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Decodes the stream to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam> 
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to decode to.</param>
         /// <param name="stream">The stream containing image data. </param>
         /// <exception cref="ImageFormatException">
         /// Thrown if the stream does not contain and end chunk.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown if the image is larger than the maximum allowable size.
         /// </exception>
-        public void Decode<T, TP>(Image<T, TP> image, Stream stream)
-            where T : IPackedVector<TP>
+        public void Decode<T, TC, TP>(Image<T, TC, TP> image, Stream stream)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
-            Image<T, TP> currentImage = image;
+            Image<T, TC, TP> currentImage = image;
             this.currentStream = stream;
             this.currentStream.Seek(8, SeekOrigin.Current);
 
@@ -131,7 +133,7 @@ namespace ImageProcessorCore.Formats
                         + $"max allowed size '{image.MaxWidth}x{image.MaxHeight}'");
                 }
 
-                T[] pixels = new T[this.header.Width * this.header.Height];
+                TC[] pixels = new TC[this.header.Width * this.header.Height];
 
                 PngColorTypeInformation colorTypeInformation = ColorTypes[this.header.ColorType];
 
@@ -139,7 +141,7 @@ namespace ImageProcessorCore.Formats
                 {
                     IColorReader colorReader = colorTypeInformation.CreateColorReader(palette, paletteAlpha);
 
-                    this.ReadScanlines<T, TP>(dataStream, pixels, colorReader, colorTypeInformation);
+                    this.ReadScanlines<T, TC, TP>(dataStream, pixels, colorReader, colorTypeInformation);
                 }
 
                 image.SetPixels(this.header.Width, this.header.Height, pixels);
@@ -184,12 +186,14 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Reads the data chunk containing physical dimension data.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to read to.</param>
         /// <param name="data">The data containing physical data.</param>
-        private void ReadPhysicalChunk<T, TP>(Image<T, TP> image, byte[] data)
-            where T : IPackedVector<TP>
+        private void ReadPhysicalChunk<T, TC, TP>(Image<T, TC, TP> image, byte[] data)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             Array.Reverse(data, 0, 4);
@@ -240,11 +244,12 @@ namespace ImageProcessorCore.Formats
         /// </summary>
         /// <param name="dataStream">The <see cref="MemoryStream"/> containing data.</param>
         /// <param name="pixels">
-        /// The <see cref="T:float[]"/> containing pixel data.</param>
+        /// The <see cref="T:TC[]"/> containing pixel data.</param>
         /// <param name="colorReader">The color reader.</param>
         /// <param name="colorTypeInformation">The color type information.</param>
-        private void ReadScanlines<T, TP>(MemoryStream dataStream, T[] pixels, IColorReader colorReader, PngColorTypeInformation colorTypeInformation)
-            where T : IPackedVector<TP>
+        private void ReadScanlines<T, TC, TP>(MemoryStream dataStream, TC[] pixels, IColorReader colorReader, PngColorTypeInformation colorTypeInformation)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             dataStream.Position = 0;
@@ -309,7 +314,7 @@ namespace ImageProcessorCore.Formats
 
                         if (column == scanlineLength)
                         {
-                            colorReader.ReadScanline<T, TP>(currentScanline, pixels, this.header);
+                            colorReader.ReadScanline<T, TC, TP>(currentScanline, pixels, this.header);
                             column = -1;
 
                             this.Swap(ref currentScanline, ref lastScanline);
@@ -322,12 +327,14 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Reads a text chunk containing image properties from the data.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to decode to.</param>
         /// <param name="data">The <see cref="T:byte[]"/> containing  data.</param>
-        private void ReadTextChunk<T, TP>(Image<T, TP> image, byte[] data)
-            where T : IPackedVector<TP>
+        private void ReadTextChunk<T, TC, TP>(Image<T, TC, TP> image, byte[] data)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             int zeroIndex = 0;

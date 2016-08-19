@@ -11,7 +11,7 @@ namespace ImageProcessorCore.Processors
     /// Converts the colors of the image to Grayscale applying the formula as specified by
     /// ITU-R Recommendation BT.709 <see href="https://en.wikipedia.org/wiki/Rec._709#Luma_coefficients"/>.
     /// </summary>
-    public class GrayscaleBt709Processor<T, TP> : ColorMatrixFilter<T, TP>
+    public class GrayscaleBt709Processor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {

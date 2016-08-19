@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -21,11 +21,11 @@ namespace ImageProcessorCore
         /// <param name="threshold">The threshold for entropic density.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TP> EntropyCrop<T, TP>(this Image<T, TP> source, float threshold = .5f, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> EntropyCrop<T, TC, TP>(this Image<T,TC,TP> source, float threshold = .5f, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            EntropyCropProcessor<T, TP> processor = new EntropyCropProcessor<T, TP>(threshold);
+            EntropyCropProcessor<T, TC, TP> processor = new EntropyCropProcessor<T, TC, TP>(threshold);
             processor.OnProgress += progressHandler;
 
             try

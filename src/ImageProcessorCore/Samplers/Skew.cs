@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -22,7 +22,7 @@ namespace ImageProcessorCore
         /// <param name="degreesY">The angle in degrees to perform the rotation along the y-axis.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TP> Skew<T, TP>(this Image<T, TP> source, float degreesX, float degreesY, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Skew<T, TC, TP>(this Image<T,TC,TP> source, float degreesX, float degreesY, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -40,11 +40,11 @@ namespace ImageProcessorCore
         /// <param name="expand">Whether to expand the image to fit the skewed result.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TP> Skew<T, TP>(this Image<T, TP> source, float degreesX, float degreesY, bool expand, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Skew<T, TC, TP>(this Image<T,TC,TP> source, float degreesX, float degreesY, bool expand, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            SkewProcessor<T, TP> processor = new SkewProcessor<T, TP> { AngleX = degreesX, AngleY = degreesY, Expand = expand };
+            SkewProcessor<T, TC, TP> processor = new SkewProcessor<T, TC, TP> { AngleX = degreesX, AngleY = degreesY, Expand = expand };
             processor.OnProgress += progressHandler;
 
             try

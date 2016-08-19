@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,7 +20,7 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/>.</returns>
-        public static Image<T, TP> Sepia<T, TP>(this Image<T, TP> source, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Sepia<T, TC, TP>(this Image<T,TC,TP> source, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -38,11 +38,11 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/>.</returns>
-        public static Image<T, TP> Sepia<T, TP>(this Image<T, TP> source, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Sepia<T, TC, TP>(this Image<T,TC,TP> source, Rectangle rectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            SepiaProcessor<T, TP> processor = new SepiaProcessor<T, TP>();
+            SepiaProcessor<T, TC, TP> processor = new SepiaProcessor<T, TC, TP>();
             processor.OnProgress += progressHandler;
 
             try

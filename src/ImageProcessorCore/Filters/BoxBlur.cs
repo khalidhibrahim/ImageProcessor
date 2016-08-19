@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,8 +20,8 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="radius">The 'radius' value representing the size of the area to sample.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> BoxBlur<T, TP>(this Image<T, TP> source, int radius = 7, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> BoxBlur<T, TC, TP>(this Image<T,TC,TP> source, int radius = 7, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -39,12 +39,12 @@ namespace ImageProcessorCore
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> BoxBlur<T, TP>(this Image<T, TP> source, int radius, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> BoxBlur<T, TC, TP>(this Image<T,TC,TP> source, int radius, Rectangle rectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            BoxBlurProcessor<T, TP> processor = new BoxBlurProcessor<T, TP>(radius);
+            BoxBlurProcessor<T, TC, TP> processor = new BoxBlurProcessor<T, TC, TP>(radius);
             processor.OnProgress += progressHandler;
 
             try

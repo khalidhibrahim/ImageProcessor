@@ -55,7 +55,7 @@ namespace ImageProcessorCore
             this.Width = image.Width;
             this.Height = image.Height;
 
-            this.pixelsHandle = GCHandle.Alloc(((ImageBase<Color, uint>)image).Pixels, GCHandleType.Pinned);
+            this.pixelsHandle = GCHandle.Alloc(((ImageBase<ColorPixelAccessor, Color, uint>)image).Pixels, GCHandleType.Pinned);
             this.pixelsBase = (Color*)this.pixelsHandle.AddrOfPinnedObject().ToPointer();
         }
 

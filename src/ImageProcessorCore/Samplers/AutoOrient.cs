@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -19,7 +19,7 @@ namespace ImageProcessorCore
         /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
         /// <param name="source">The image to crop.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TP> AutoOrient<T, TP>(this Image<T, TP> source, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> AutoOrient<T, TC, TP>(this Image<T,TC,TP> source, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -59,7 +59,7 @@ namespace ImageProcessorCore
             }
         }
 
-        private static Orientation GetExifOrientation<T, TP>(Image<T, TP> source)
+        private static Orientation GetExifOrientation<T, TC, TP>(Image<T,TC,TP> source)
             where T : IPackedVector<TP>
             where TP : struct
         {

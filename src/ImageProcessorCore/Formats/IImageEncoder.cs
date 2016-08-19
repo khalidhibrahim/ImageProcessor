@@ -38,14 +38,16 @@ namespace ImageProcessorCore.Formats
         bool IsSupportedFileExtension(string extension);
 
         /// <summary>
-        /// Encodes the image to the specified stream from the <see cref="Image{T,P}"/>.
+        /// Encodes the image to the specified stream from the <see cref="Image{T, TC, TP}"/>.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="Image{T,P}"/> to encode from.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="image">The <see cref="Image{T, TC, TP}"/> to encode from.</param>
         /// <param name="stream">The <see cref="Stream"/> to encode the image data to.</param>
-        void Encode<T, TP>(Image<T, TP> image, Stream stream)
-            where T : IPackedVector<TP>
+        void Encode<T, TC, TP>(Image<T, TC, TP> image, Stream stream)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct;
     }
 }

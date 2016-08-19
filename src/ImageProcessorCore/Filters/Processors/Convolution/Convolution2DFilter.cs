@@ -14,7 +14,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public abstract class Convolution2DFilter<T, TP> : ImageProcessor<T, TP>
+    public abstract class Convolution2DFilter<T, TC, TP> : ImageProcessor<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -29,7 +29,7 @@ namespace ImageProcessorCore.Processors
         public abstract float[,] KernelY { get; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             float[,] kernelX = this.KernelX;
             float[,] kernelY = this.KernelY;
@@ -47,8 +47,8 @@ namespace ImageProcessorCore.Processors
             int maxY = sourceBottom - 1;
             int maxX = endX - 1;
 
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                 startY,
@@ -108,7 +108,7 @@ namespace ImageProcessorCore.Processors
                             float blue = (float)Math.Sqrt((bX * bX) + (bY * bY));
 
                             Vector4 targetColor = targetPixels[x, y].ToVector4();
-                            T packed = default(T);
+                            TC packed = default(TC);
                             packed.PackFromVector4(new Vector4(red, green, blue, targetColor.Z));
                             targetPixels[x, y] = packed;
                         }

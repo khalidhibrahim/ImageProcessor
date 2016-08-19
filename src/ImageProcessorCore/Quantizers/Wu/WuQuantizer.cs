@@ -30,10 +30,12 @@ namespace ImageProcessorCore.Quantizers
     /// but more expensive versions.
     /// </para>
     /// </remarks>
-    /// <typeparam name="T">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public sealed class WuQuantizer<T, TP> : IQuantizer<T, TP>
-        where T : IPackedVector<TP>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+    public sealed class WuQuantizer<T, TC, TP> : IQuantizer<T, TC, TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -119,7 +121,7 @@ namespace ImageProcessorCore.Quantizers
         public byte Threshold { get; set; }
 
         /// <inheritdoc/>
-        public QuantizedImage<T, TP> Quantize(ImageBase<T, TP> image, int maxColors)
+        public QuantizedImage<T, TC, TP> Quantize(ImageBase<T, TC, TP> image, int maxColors)
         {
             Guard.NotNull(image, nameof(image));
 
@@ -127,7 +129,7 @@ namespace ImageProcessorCore.Quantizers
 
             this.Clear();
 
-            using (IPixelAccessor<T, TP> imagePixels = image.Lock())
+            using (T imagePixels = image.Lock())
             {
                 this.Build3DHistogram(imagePixels);
                 this.Get3DMoments();
@@ -325,7 +327,7 @@ namespace ImageProcessorCore.Quantizers
         /// Builds a 3-D color histogram of <c>counts, r/g/b, c^2</c>.
         /// </summary>
         /// <param name="pixels">The pixel accessor.</param>
-        private void Build3DHistogram(IPixelAccessor<T, TP> pixels)
+        private void Build3DHistogram(T pixels)
         {
             for (int y = 0; y < pixels.Height; y++)
             {
@@ -723,9 +725,9 @@ namespace ImageProcessorCore.Quantizers
         /// <param name="colorCount">The color count.</param>
         /// <param name="cube">The cube.</param>
         /// <returns>The result.</returns>
-        private QuantizedImage<T, TP> GenerateResult(IPixelAccessor<T, TP> imagePixels, int colorCount, Box[] cube)
+        private QuantizedImage<T, TC, TP> GenerateResult(T imagePixels, int colorCount, Box[] cube)
         {
-            List<T> pallette = new List<T>();
+            List<TC> pallette = new List<TC>();
             byte[] pixels = new byte[imagePixels.Width * imagePixels.Height];
             int transparentIndex = -1;
             int width = imagePixels.Width;
@@ -744,10 +746,10 @@ namespace ImageProcessorCore.Quantizers
                     byte b = (byte)(Volume(cube[k], this.vmb) / weight);
                     byte a = (byte)(Volume(cube[k], this.vma) / weight);
 
-                    T color = default(T);
+                    TC color = default(TC);
                     color.PackFromBytes(r, g, b, a);
 
-                    if (color.Equals(default(T)))
+                    if (color.Equals(default(TC)))
                     {
                         transparentIndex = k;
                     }
@@ -756,7 +758,7 @@ namespace ImageProcessorCore.Quantizers
                 }
                 else
                 {
-                    pallette.Add(default(T));
+                    pallette.Add(default(TC));
                     transparentIndex = k;
                 }
             }
@@ -787,7 +789,7 @@ namespace ImageProcessorCore.Quantizers
                         }
                     });
 
-            return new QuantizedImage<T, TP>(width, height, pallette.ToArray(), pixels, transparentIndex);
+            return new QuantizedImage<T, TC, TP>(width, height, pallette.ToArray(), pixels, transparentIndex);
         }
     }
 }

@@ -12,8 +12,9 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Sets the background color of the image.
     /// </summary>
-    public class BackgroundColorProcessor<T, TP> : ImageProcessor<T, TP>
-        where T : IPackedVector<TP>
+    public class BackgroundColorProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -22,10 +23,10 @@ namespace ImageProcessorCore.Processors
         private const float Epsilon = 0.001f;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackgroundColorProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="BackgroundColorProcessor{T,TC,TP}"/> class.
         /// </summary>
-        /// <param name="color">The <see cref="T"/> to set the background color to.</param>
-        public BackgroundColorProcessor(T color)
+        /// <param name="color">The <see cref="TC"/> to set the background color to.</param>
+        public BackgroundColorProcessor(TC color)
         {
             this.Value = color;
         }
@@ -33,10 +34,10 @@ namespace ImageProcessorCore.Processors
         /// <summary>
         /// Gets the background color value.
         /// </summary>
-        public T Value { get; }
+        public TC Value { get; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
@@ -60,8 +61,8 @@ namespace ImageProcessorCore.Processors
 
             Vector4 backgroundColor = this.Value.ToVector4();
 
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                     minY,
@@ -86,7 +87,7 @@ namespace ImageProcessorCore.Processors
                                     color = backgroundColor;
                                 }
 
-                                T packed = default(T);
+                                TC packed = default(TC);
                                 packed.PackFromVector4(color);
                                 targetPixels[offsetX, offsetY] = packed;
                             }

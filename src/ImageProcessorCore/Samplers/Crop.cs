@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -21,8 +21,8 @@ namespace ImageProcessorCore
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/></returns>
-        public static Image<T, TP> Crop<T, TP>(this Image<T, TP> source, int width, int height, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
+        public static Image<T,TC,TP> Crop<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -46,7 +46,7 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TP> Crop<T, TP>(this Image<T, TP> source, int width, int height, Rectangle sourceRectangle, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Crop<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, Rectangle sourceRectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -60,7 +60,7 @@ namespace ImageProcessorCore
                 source = source.Resize(sourceRectangle.Width, sourceRectangle.Height);
             }
 
-            CropProcessor<T, TP> processor = new CropProcessor<T, TP>();
+            CropProcessor<T, TC, TP> processor = new CropProcessor<T, TC, TP>();
             processor.OnProgress += progressHandler;
 
             try

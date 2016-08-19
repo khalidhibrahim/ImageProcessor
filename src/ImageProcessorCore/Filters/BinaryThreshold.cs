@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,9 +20,10 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="threshold">The threshold to apply binerization of the image. Must be between 0 and 1.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> BinaryThreshold<T, TP>(this Image<T, TP> source, float threshold, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T, TC, TP> BinaryThreshold<T, TC, TP>(this Image<T, TC, TP> source, float threshold, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             return BinaryThreshold(source, threshold, source.Bounds, progressHandler);
@@ -39,12 +40,13 @@ namespace ImageProcessorCore
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> BinaryThreshold<T, TP>(this Image<T, TP> source, float threshold, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPackedVector<TP>
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T, TC, TP> BinaryThreshold<T, TC, TP>(this Image<T, TC, TP> source, float threshold, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
-            BinaryThresholdProcessor<T, TP> processor = new BinaryThresholdProcessor<T, TP>(threshold);
+            BinaryThresholdProcessor<T, TC, TP> processor = new BinaryThresholdProcessor<T, TC, TP>(threshold);
             processor.OnProgress += progressHandler;
 
             try

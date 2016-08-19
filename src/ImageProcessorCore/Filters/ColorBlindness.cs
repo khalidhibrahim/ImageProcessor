@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,8 +20,8 @@ namespace ImageProcessorCore
         /// <param name="source">The image this method extends.</param>
         /// <param name="colorBlindness">The type of color blindness simulator to apply.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> ColorBlindness<T, TP>(this Image<T, TP> source, ColorBlindness colorBlindness, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> ColorBlindness<T, TC, TP>(this Image<T,TC,TP> source, ColorBlindness colorBlindness, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -39,45 +39,45 @@ namespace ImageProcessorCore
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/>.</returns>
-        public static Image<T, TP> ColorBlindness<T, TP>(this Image<T, TP> source, ColorBlindness colorBlindness, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
+        public static Image<T,TC,TP> ColorBlindness<T, TC, TP>(this Image<T,TC,TP> source, ColorBlindness colorBlindness, Rectangle rectangle, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
-            IImageProcessor<T, TP> processor;
+            IImageProcessor<T, TC, TP> processor;
 
             switch (colorBlindness)
             {
                 case ImageProcessorCore.ColorBlindness.Achromatomaly:
-                    processor = new AchromatomalyProcessor<T, TP>();
+                    processor = new AchromatomalyProcessor<T, TC, TP>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Achromatopsia:
-                    processor = new AchromatopsiaProcessor<T, TP>();
+                    processor = new AchromatopsiaProcessor<T, TC, TP>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Deuteranomaly:
-                    processor = new DeuteranomalyProcessor<T, TP>();
+                    processor = new DeuteranomalyProcessor<T, TC, TP>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Deuteranopia:
-                    processor = new DeuteranopiaProcessor<T, TP>();
+                    processor = new DeuteranopiaProcessor<T, TC, TP>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Protanomaly:
-                    processor = new ProtanomalyProcessor<T, TP>();
+                    processor = new ProtanomalyProcessor<T, TC, TP>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Protanopia:
-                    processor = new ProtanopiaProcessor<T, TP>();
+                    processor = new ProtanopiaProcessor<T, TC, TP>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Tritanomaly:
-                    processor = new TritanomalyProcessor<T, TP>();
+                    processor = new TritanomalyProcessor<T, TC, TP>();
                     break;
 
                 default:
-                    processor = new TritanopiaProcessor<T, TP>();
+                    processor = new TritanopiaProcessor<T, TC, TP>();
                     break;
             }
 

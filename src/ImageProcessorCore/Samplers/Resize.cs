@@ -8,7 +8,7 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T,TP}"/> type.
+    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
@@ -20,9 +20,9 @@ namespace ImageProcessorCore
         /// <param name="source">The image to resize.</param>
         /// <param name="options">The resize options.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/></returns>
+        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width within the resize options will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T, TP> Resize<T, TP>(this Image<T, TP> source, ResizeOptions options, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, ResizeOptions options, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -51,9 +51,9 @@ namespace ImageProcessorCore
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/></returns>
+        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T, TP> Resize<T, TP>(this Image<T, TP> source, int width, int height, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -70,9 +70,9 @@ namespace ImageProcessorCore
         /// <param name="height">The target image height.</param>
         /// <param name="compand">Whether to compress and expand the image color-space to gamma correct the image during processing.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/></returns>
+        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T, TP> Resize<T, TP>(this Image<T, TP> source, int width, int height, bool compand, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, bool compand, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -90,9 +90,9 @@ namespace ImageProcessorCore
         /// <param name="sampler">The <see cref="IResampler"/> to perform the resampling.</param>
         /// <param name="compand">Whether to compress and expand the image color-space to gamma correct the image during processing.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/></returns>
+        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T, TP> Resize<T, TP>(this Image<T, TP> source, int width, int height, IResampler sampler, bool compand, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, IResampler sampler, bool compand, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -117,9 +117,9 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="compand">Whether to compress and expand the image color-space to gamma correct the image during processing.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T,TP}"/></returns>
+        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
         /// <remarks>Passing zero for one of height or width will automatically preserve the aspect ratio of the original image</remarks>
-        public static Image<T, TP> Resize<T, TP>(this Image<T, TP> source, int width, int height, IResampler sampler, Rectangle sourceRectangle, Rectangle targetRectangle, bool compand = false, ProgressEventHandler progressHandler = null)
+        public static Image<T,TC,TP> Resize<T, TC, TP>(this Image<T,TC,TP> source, int width, int height, IResampler sampler, Rectangle sourceRectangle, Rectangle targetRectangle, bool compand = false, ProgressEventHandler progressHandler = null)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -138,15 +138,15 @@ namespace ImageProcessorCore
             Guard.MustBeGreaterThan(width, 0, nameof(width));
             Guard.MustBeGreaterThan(height, 0, nameof(height));
 
-            ResamplingWeightedProcessor<T, TP> processor;
+            ResamplingWeightedProcessor<T, TC, TP> processor;
 
             if (compand)
             {
-                processor = new CompandingResizeProcessor<T, TP>(sampler);
+                processor = new CompandingResizeProcessor<T, TC, TP>(sampler);
             }
             else
             {
-                processor = new ResizeProcessor<T, TP>(sampler);
+                processor = new ResizeProcessor<T, TC, TP>(sampler);
             }
 
             processor.OnProgress += progressHandler;

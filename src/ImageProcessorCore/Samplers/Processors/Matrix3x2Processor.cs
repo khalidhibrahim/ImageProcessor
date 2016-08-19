@@ -12,7 +12,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public abstract class Matrix3x2Processor<T, TP> : ImageSampler<T, TP>
+    public abstract class Matrix3x2Processor<T, TC, TP> : ImageSampler<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -22,7 +22,7 @@ namespace ImageProcessorCore.Processors
         /// <param name="target">Target image to apply the process to.</param>
         /// <param name="sourceRectangle">The source rectangle.</param>
         /// <param name="processMatrix">The processing matrix.</param>
-        protected static void CreateNewTarget(ImageBase<T, TP> target, Rectangle sourceRectangle, Matrix3x2 processMatrix)
+        protected static void CreateNewTarget(ImageBase<T, TC, TP> target, Rectangle sourceRectangle, Matrix3x2 processMatrix)
         {
             Matrix3x2 sizeMatrix;
             if (Matrix3x2.Invert(processMatrix, out sizeMatrix))
@@ -41,7 +41,7 @@ namespace ImageProcessorCore.Processors
         /// <returns>
         /// The <see cref="Matrix3x2"/>.
         /// </returns>
-        protected static Matrix3x2 GetCenteredMatrix(ImageBase<T, TP> target, ImageBase<T, TP> source, Matrix3x2 matrix)
+        protected static Matrix3x2 GetCenteredMatrix(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Matrix3x2 matrix)
         {
             Matrix3x2 translationToTargetCenter = Matrix3x2.CreateTranslation(-target.Width * .5F, -target.Height * .5F);
             Matrix3x2 translateToSourceCenter = Matrix3x2.CreateTranslation(source.Width * .5F, source.Height * .5F);

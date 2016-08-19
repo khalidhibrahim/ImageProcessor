@@ -14,7 +14,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class EntropyCropProcessor<T, TP> : ImageSampler<T, TP>
+    public class EntropyCropProcessor<T, TC, TP> : ImageSampler<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -27,7 +27,7 @@ namespace ImageProcessorCore.Processors
         /// Initializes a new instance of the <see cref="EntropyCropProcessor{T,TP}"/> class.
         /// </summary>
         /// <param name="threshold">The threshold to split the image. Must be between 0 and 1.</param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="threshold"/> is less than 0 or is greater than 1.
         /// </exception>
         public EntropyCropProcessor(float threshold)
@@ -42,15 +42,15 @@ namespace ImageProcessorCore.Processors
         public float Value { get; }
 
         /// <inheritdoc/>
-        protected override void OnApply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void OnApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            ImageBase<T, TP> temp = new Image<T, TP>(source.Width, source.Height);
+            ImageBase<T, TC, TP> temp = new Image<T,TC,TP>(source.Width, source.Height);
 
             // Detect the edges.
-            new SobelProcessor<T, TP>().Apply(temp, source, sourceRectangle);
+            new SobelProcessor<T, TC, TP>().Apply(temp, source, sourceRectangle);
 
             // Apply threshold binarization filter.
-            new BinaryThresholdProcessor<T, TP>(.5f).Apply(temp, temp, sourceRectangle);
+            new BinaryThresholdProcessor<T, TC, TP>(.5f).Apply(temp, temp, sourceRectangle);
 
             // Search for the first white pixels
             Rectangle rectangle = ImageMaths.GetFilteredBoundingRectangle(temp, 0);
@@ -61,7 +61,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             // Jump out, we'll deal with that later.
             if (source.Bounds == target.Bounds)
@@ -77,8 +77,8 @@ namespace ImageProcessorCore.Processors
             int minY = Math.Max(targetY, startY);
             int maxY = Math.Min(targetBottom, endY);
 
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                     minY,
@@ -97,7 +97,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <inheritdoc/>
-        protected override void AfterApply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void AfterApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
             // Copy the pixels over.
             if (source.Bounds == target.Bounds)

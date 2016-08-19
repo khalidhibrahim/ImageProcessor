@@ -55,11 +55,12 @@ namespace ImageProcessorCore.Formats
         }
 
         /// <inheritdoc/>
-        public void Decode<T, TP>(Image<T, TP> image, Stream stream)
-            where T : IPackedVector<TP>
+        public void Decode<T, TC, TP>(Image<T, TC, TP> image, Stream stream)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
-            new GifDecoderCore<T, TP>().Decode(image, stream);
+            new GifDecoderCore<T, TC, TP>().Decode(image, stream);
         }
     }
 }

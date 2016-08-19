@@ -10,11 +10,11 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TP}"/> to change the brightness of an <see cref="Image{T,TP}"/>.
+    /// An <see cref="IImageProcessor{T,TP}"/> to change the brightness of an <see cref="Image{T, TC, TP}"/>.
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class BrightnessProcessor<T, TP> : ImageProcessor<T, TP>
+    public class BrightnessProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {
@@ -22,7 +22,7 @@ namespace ImageProcessorCore.Processors
         /// Initializes a new instance of the <see cref="BrightnessProcessor{T,TP}"/> class.
         /// </summary>
         /// <param name="brightness">The new brightness of the image. Must be between -100 and 100.</param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="System.ArgumentException">
         /// <paramref name="brightness"/> is less than -100 or is greater than 100.
         /// </exception>
         public BrightnessProcessor(int brightness)
@@ -37,7 +37,7 @@ namespace ImageProcessorCore.Processors
         public int Value { get; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TP> target, ImageBase<T, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             float brightness = this.Value / 100F;
             int startX = sourceRectangle.X;
@@ -60,8 +60,8 @@ namespace ImageProcessorCore.Processors
                 startY = 0;
             }
 
-            using (IPixelAccessor<T, TP> sourcePixels = source.Lock())
-            using (IPixelAccessor<T, TP> targetPixels = target.Lock())
+            using (T sourcePixels = source.Lock())
+            using (T targetPixels = target.Lock())
             {
                 Parallel.For(
                     minY,
@@ -79,7 +79,7 @@ namespace ImageProcessorCore.Processors
                                 Vector3 transformed = new Vector3(vector.X, vector.Y, vector.Z) + new Vector3(brightness);
                                 vector = new Vector4(transformed, vector.W);
 
-                                T packed = default(T);
+                                TC packed = default(TC);
                                 packed.PackFromVector4(vector.Compress());
 
                                 targetPixels[offsetX, offsetY] = packed;

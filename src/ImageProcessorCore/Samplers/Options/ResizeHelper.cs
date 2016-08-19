@@ -23,7 +23,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        public static Rectangle CalculateTargetLocationAndBounds<T, TP>(ImageBase<T, TP> source, ResizeOptions options)
+        public static Rectangle CalculateTargetLocationAndBounds<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -55,7 +55,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateCropRectangle<T, TP>(ImageBase<T, TP> source, ResizeOptions options)
+        private static Rectangle CalculateCropRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -175,7 +175,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculatePadRectangle<T, TP>(ImageBase<T, TP> source, ResizeOptions options)
+        private static Rectangle CalculatePadRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -257,7 +257,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateBoxPadRectangle<T, TP>(ImageBase<T, TP> source, ResizeOptions options)
+        private static Rectangle CalculateBoxPadRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -345,7 +345,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateMaxRectangle<T, TP>(ImageBase<T, TP> source, ResizeOptions options)
+        private static Rectangle CalculateMaxRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
             where T : IPackedVector<TP>
             where TP : struct
         {
@@ -387,7 +387,7 @@ namespace ImageProcessorCore
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateMinRectangle<T, TP>(ImageBase<T, TP> source, ResizeOptions options)
+        private static Rectangle CalculateMinRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
             where T : IPackedVector<TP>
             where TP : struct
         {

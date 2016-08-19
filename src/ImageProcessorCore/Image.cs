@@ -13,7 +13,7 @@ namespace ImageProcessorCore
     /// packed into a single unsigned integer value.
     /// </summary>
     [DebuggerDisplay("Image: {Width}x{Height}")]
-    public class Image : Image<Color, uint>
+    public class Image : Image<ColorPixelAccessor, Color, uint>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Image"/> class
@@ -40,7 +40,7 @@ namespace ImageProcessorCore
         /// <param name="stream">
         /// The stream containing image information.
         /// </param>
-        /// <exception cref="ArgumentNullException">Thrown if the <paramref name="stream"/> is null.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="stream"/> is null.</exception>
         public Image(Stream stream)
             : base(stream)
         {
@@ -51,7 +51,7 @@ namespace ImageProcessorCore
         /// by making a copy from another image.
         /// </summary>
         /// <param name="other">The other image, where the clone should be made from.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="other"/> is null.</exception>
+        /// <exception cref="System.ArgumentNullException"><paramref name="other"/> is null.</exception>
         public Image(Image other)
             : base(other)
         {

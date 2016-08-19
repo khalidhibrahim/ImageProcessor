@@ -11,8 +11,12 @@ namespace ImageProcessorCore.Quantizers
     /// <summary>
     /// Encapsulates methods to calculate the color palette of an image.
     /// </summary>
-    public abstract class Quantizer<T, TP> : IQuantizer<T, TP>
-        where T : IPackedVector<TP>
+    /// <typeparam name="T">The pixel accessor.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
+    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+    public abstract class Quantizer<T, TC, TP> : IQuantizer<T, TC, TP>
+        where T : IPixelAccessor<TC, TP>
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -21,7 +25,7 @@ namespace ImageProcessorCore.Quantizers
         private readonly bool singlePass;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Quantizer{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="Quantizer{T,TC,TP}"/> class.
         /// </summary>
         /// <param name="singlePass">
         /// If true, the quantization only needs to loop through the source pixels once
@@ -45,7 +49,7 @@ namespace ImageProcessorCore.Quantizers
         public byte Threshold { get; set; }
 
         /// <inheritdoc/>
-        public virtual QuantizedImage<T, TP> Quantize(ImageBase<T, TP> image, int maxColors)
+        public virtual QuantizedImage<T, TC, TP> Quantize(ImageBase<T, TC, TP> image, int maxColors)
         {
             Guard.NotNull(image, nameof(image));
 
@@ -53,9 +57,9 @@ namespace ImageProcessorCore.Quantizers
             int height = image.Height;
             int width = image.Width;
             byte[] quantizedPixels = new byte[width * height];
-            List<T> palette;
+            List<TC> palette;
 
-            using (IPixelAccessor<T, TP> pixels = image.Lock())
+            using (T pixels = image.Lock())
             {
                 // Call the FirstPass function if not a single pass algorithm.
                 // For something like an Octree quantizer, this will run through
@@ -71,7 +75,7 @@ namespace ImageProcessorCore.Quantizers
                 this.SecondPass(pixels, quantizedPixels, width, height);
             }
 
-            return new QuantizedImage<T, TP>(width, height, palette.ToArray(), quantizedPixels, this.TransparentIndex);
+            return new QuantizedImage<T, TC, TP>(width, height, palette.ToArray(), quantizedPixels, this.TransparentIndex);
         }
 
         /// <summary>
@@ -80,7 +84,7 @@ namespace ImageProcessorCore.Quantizers
         /// <param name="source">The source data</param>
         /// <param name="width">The width in pixels of the image.</param>
         /// <param name="height">The height in pixels of the image.</param>
-        protected virtual void FirstPass(IPixelAccessor<T, TP> source, int width, int height)
+        protected virtual void FirstPass(T source, int width, int height)
         {
             // Loop through each row
             for (int y = 0; y < height; y++)
@@ -101,7 +105,7 @@ namespace ImageProcessorCore.Quantizers
         /// <param name="output">The output pixel array</param>
         /// <param name="width">The width in pixels of the image</param>
         /// <param name="height">The height in pixels of the image</param>
-        protected virtual void SecondPass(IPixelAccessor<T, TP> source, byte[] output, int width, int height)
+        protected virtual void SecondPass(T source, byte[] output, int width, int height)
         {
             Parallel.For(
                 0,
@@ -111,7 +115,7 @@ namespace ImageProcessorCore.Quantizers
                     {
                         for (int x = 0; x < source.Width; x++)
                         {
-                            T sourcePixel = source[x, y];
+                            TC sourcePixel = source[x, y];
                             output[(y * source.Width) + x] = this.QuantizePixel(sourcePixel);
                         }
                     });
@@ -125,7 +129,7 @@ namespace ImageProcessorCore.Quantizers
         /// This function need only be overridden if your quantize algorithm needs two passes,
         /// such as an Octree quantizer.
         /// </remarks>
-        protected virtual void InitialQuantizePixel(T pixel)
+        protected virtual void InitialQuantizePixel(TC pixel)
         {
         }
 
@@ -136,7 +140,7 @@ namespace ImageProcessorCore.Quantizers
         /// <returns>
         /// The quantized value
         /// </returns>
-        protected abstract byte QuantizePixel(T pixel);
+        protected abstract byte QuantizePixel(TC pixel);
 
         /// <summary>
         /// Retrieve the palette for the quantized image
@@ -144,6 +148,6 @@ namespace ImageProcessorCore.Quantizers
         /// <returns>
         /// The new color palette
         /// </returns>
-        protected abstract List<T> GetPalette();
+        protected abstract List<TC> GetPalette();
     }
 }

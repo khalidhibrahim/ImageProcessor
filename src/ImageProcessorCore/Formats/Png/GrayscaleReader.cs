@@ -33,8 +33,9 @@ namespace ImageProcessorCore.Formats
         }
 
         /// <inheritdoc/>
-        public void ReadScanline<T, TP>(byte[] scanline, T[] pixels, PngHeader header)
-            where T : IPackedVector<TP>
+        public void ReadScanline<T, TC, TP>(byte[] scanline, TC[] pixels, PngHeader header)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             int offset;
@@ -51,7 +52,7 @@ namespace ImageProcessorCore.Formats
                     byte rgb = newScanline[x * 2];
                     byte a = newScanline[(x * 2) + 1];
 
-                    T color = default(T);
+                    TC color = default(TC);
                     color.PackFromBytes(rgb, rgb, rgb, a);
                     pixels[offset] = color;
                 }
@@ -63,7 +64,7 @@ namespace ImageProcessorCore.Formats
                     offset = (this.row * header.Width) + x;
                     byte rgb = newScanline[x];
 
-                    T color = default(T);
+                    TC color = default(TC);
                     color.PackFromBytes(rgb, rgb, rgb, 255);
 
                     pixels[offset] = color;

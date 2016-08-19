@@ -25,15 +25,16 @@ namespace ImageProcessorCore.Formats
         private int padding;
 
         /// <summary>
-        /// Encodes the image to the specified stream from the <see cref="ImageBase{T,TP}"/>.
+        /// Encodes the image to the specified stream from the <see cref="ImageBase{T,TC,TP}"/>.
         /// </summary>
         /// <typeparam name="T">The pixel format.</typeparam>
         /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="ImageBase{T,TP}"/> to encode from.</param>
+        /// <param name="image">The <see cref="ImageBase{T,TC,TP}"/> to encode from.</param>
         /// <param name="stream">The <see cref="Stream"/> to encode the image data to.</param>
         /// <param name="bitsPerPixel">The <see cref="BmpBitsPerPixel"/></param>
-        public void Encode<T, TP>(ImageBase<T, TP> image, Stream stream, BmpBitsPerPixel bitsPerPixel)
-            where T : IPackedVector<TP>
+        public void Encode<T, TC, TP>(ImageBase<T, TC, TP> image, Stream stream, BmpBitsPerPixel bitsPerPixel)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             Guard.NotNull(image, nameof(image));
@@ -119,26 +120,28 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the pixel data to the binary stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="writer">The <see cref="EndianBinaryWriter"/> containing the stream to write to.</param>
         /// <param name="image">
-        /// The <see cref="ImageBase{T,TP}"/> containing pixel data.
+        /// The <see cref="ImageBase{T,TC,TP}"/> containing pixel data.
         /// </param>
-        private void WriteImage<T, TP>(EndianBinaryWriter writer, ImageBase<T, TP> image)
-            where T : IPackedVector<TP>
+        private void WriteImage<T, TC, TP>(EndianBinaryWriter writer, ImageBase<T, TC, TP> image)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
-            using (IPixelAccessor<T, TP> pixels = image.Lock())
+            using (T pixels = image.Lock())
             {
                 switch (this.bmpBitsPerPixel)
                 {
                     case BmpBitsPerPixel.Pixel32:
-                        this.Write32Bit(writer, pixels);
+                        this.Write32Bit<T, TC, TP>(writer, pixels);
                         break;
 
                     case BmpBitsPerPixel.Pixel24:
-                        this.Write24Bit(writer, pixels);
+                        this.Write24Bit<T, TC, TP>(writer, pixels);
                         break;
                 }
             }
@@ -147,12 +150,14 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the 32bit color palette to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="writer">The <see cref="EndianBinaryWriter"/> containing the stream to write to.</param>
         /// <param name="pixels">The <see cref="IPixelAccessor"/> containing pixel data.</param>
-        private void Write32Bit<T, TP>(EndianBinaryWriter writer, IPixelAccessor<T, TP> pixels)
-            where T : IPackedVector<TP>
+        private void Write32Bit<T, TC, TP>(EndianBinaryWriter writer, T pixels)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             for (int y = pixels.Height - 1; y >= 0; y--)
@@ -175,11 +180,14 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the 24bit color palette to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>/// <param name="writer">The <see cref="EndianBinaryWriter"/> containing the stream to write to.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="writer">The <see cref="EndianBinaryWriter"/> containing the stream to write to.</param>
         /// <param name="pixels">The <see cref="IPixelAccessor"/> containing pixel data.</param>
-        private void Write24Bit<T, TP>(EndianBinaryWriter writer, IPixelAccessor<T, TP> pixels)
-            where T : IPackedVector<TP>
+        private void Write24Bit<T, TC, TP>(EndianBinaryWriter writer, T pixels)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             for (int y = pixels.Height - 1; y >= 0; y--)

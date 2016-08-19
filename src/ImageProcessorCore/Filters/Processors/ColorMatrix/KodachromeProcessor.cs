@@ -12,7 +12,7 @@ namespace ImageProcessorCore.Processors
     /// </summary>
     /// <typeparam name="T">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public class KodachromeProcessor<T, TP> : ColorMatrixFilter<T, TP>
+    public class KodachromeProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
         where T : IPackedVector<TP>
         where TP : struct
     {

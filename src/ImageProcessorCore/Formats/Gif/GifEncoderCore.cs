@@ -40,14 +40,16 @@ namespace ImageProcessorCore.Formats
         public IQuantizer Quantizer { get; set; }
 
         /// <summary>
-        /// Encodes the image to the specified stream from the <see cref="Image{T,TP}"/>.
+        /// Encodes the image to the specified stream from the <see cref="Image{T, TC, TP}"/>.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="Image{T,TP}"/> to encode from.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="image">The <see cref="Image{T, TC, TP}"/> to encode from.</param>
         /// <param name="stream">The <see cref="Stream"/> to encode the image data to.</param>
-        public void Encode<T, TP>(Image<T, TP> image, Stream stream)
-            where T : IPackedVector<TP>
+        public void Encode<T, TC, TP>(Image<T, TC, TP> image, Stream stream)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             Guard.NotNull(image, nameof(image));
@@ -55,7 +57,7 @@ namespace ImageProcessorCore.Formats
 
             if (this.Quantizer == null)
             {
-                this.Quantizer = new OctreeQuantizer<T, TP> { Threshold = this.Threshold };
+                this.Quantizer = new OctreeQuantizer<T, TC, TP> { Threshold = this.Threshold };
             }
 
             // Do not use IDisposable pattern here as we want to preserve the stream. 
@@ -69,7 +71,7 @@ namespace ImageProcessorCore.Formats
             this.bitDepth = ImageMaths.GetBitsNeededForColorDepth(this.Quality);
 
             // Quantize the image returning a palette.
-            QuantizedImage<T, TP> quantized = ((IQuantizer<T, TP>)this.Quantizer).Quantize(image, this.Quality);
+            QuantizedImage<T, TC, TP> quantized = ((IQuantizer<T, TC, TP>)this.Quantizer).Quantize(image, this.Quality);
 
             // Write the header.
             this.WriteHeader(writer);
@@ -87,9 +89,9 @@ namespace ImageProcessorCore.Formats
             if (image.Frames.Any())
             {
                 this.WriteApplicationExtension(writer, image.RepeatCount, image.Frames.Count);
-                foreach (ImageFrame<T, TP> frame in image.Frames)
+                foreach (ImageFrame<T, TC, TP> frame in image.Frames)
                 {
-                    QuantizedImage<T, TP> quantizedFrame = ((IQuantizer<T, TP>)this.Quantizer).Quantize(frame, this.Quality);
+                    QuantizedImage<T, TC, TP> quantizedFrame = ((IQuantizer<T, TC, TP>)this.Quantizer).Quantize(frame, this.Quality);
                     this.WriteGraphicalControlExtension(frame, writer, quantizedFrame.TransparentIndex);
                     this.WriteImageDescriptor(frame, writer);
                     this.WriteColorTable(quantizedFrame, writer);
@@ -113,13 +115,15 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the logical screen descriptor to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to encode.</param>
         /// <param name="writer">The writer to write to the stream with.</param>
         /// <param name="tranparencyIndex">The transparency index to set the default backgound index to.</param>
-        private void WriteLogicalScreenDescriptor<T, TP>(Image<T, TP> image, EndianBinaryWriter writer, int tranparencyIndex)
-            where T : IPackedVector<TP>
+        private void WriteLogicalScreenDescriptor<T, TC, TP>(Image<T, TC, TP> image, EndianBinaryWriter writer, int tranparencyIndex)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             GifLogicalScreenDescriptor descriptor = new GifLogicalScreenDescriptor
@@ -186,13 +190,15 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the graphics control extension to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="ImageBase{T,TP}"/> to encode.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="image">The <see cref="ImageBase{T,TC,TP}"/> to encode.</param>
         /// <param name="writer">The stream to write to.</param>
         /// <param name="transparencyIndex">The index of the color in the color palette to make transparent.</param>
-        private void WriteGraphicalControlExtension<T, TP>(ImageBase<T, TP> image, EndianBinaryWriter writer, int transparencyIndex)
-            where T : IPackedVector<TP>
+        private void WriteGraphicalControlExtension<T, TC, TP>(ImageBase<T, TC, TP> image, EndianBinaryWriter writer, int transparencyIndex)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             // TODO: Check transparency logic.
@@ -234,12 +240,14 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the image descriptor to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="ImageBase{T,TP}"/> to be encoded.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="image">The <see cref="ImageBase{T,TC,TP}"/> to be encoded.</param>
         /// <param name="writer">The stream to write to.</param>
-        private void WriteImageDescriptor<T, TP>(ImageBase<T, TP> image, EndianBinaryWriter writer)
-            where T : IPackedVector<TP>
+        private void WriteImageDescriptor<T, TC, TP>(ImageBase<T, TC, TP> image, EndianBinaryWriter writer)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             writer.Write(GifConstants.ImageDescriptorLabel); // 2c
@@ -261,16 +269,18 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the color table to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="ImageBase{T,TP}"/> to encode.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="image">The <see cref="ImageBase{T,TC,TP}"/> to encode.</param>
         /// <param name="writer">The writer to write to the stream with.</param>
-        private void WriteColorTable<T, TP>(QuantizedImage<T, TP> image, EndianBinaryWriter writer)
-            where T : IPackedVector<TP>
+        private void WriteColorTable<T, TC, TP>(QuantizedImage<T, TC, TP> image, EndianBinaryWriter writer)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             // Grab the palette and write it to the stream.
-            T[] palette = image.Palette;
+            TC[] palette = image.Palette;
             int pixelCount = palette.Length;
 
             // Get max colors for bit depth.
@@ -294,12 +304,14 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Writes the image pixel data to the stream.
         /// </summary>
-        /// <typeparam name="T">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-        /// <param name="image">The <see cref="QuantizedImage{T,TP}"/> containing indexed pixels.</param>
+        /// <typeparam name="T">The pixel accessor.</typeparam>
+        /// <typeparam name="TC">The pixel format.</typeparam>
+        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+        /// <param name="image">The <see cref="QuantizedImage{T, TC, TP}"/> containing indexed pixels.</param>
         /// <param name="writer">The stream to write to.</param>
-        private void WriteImageData<T, TP>(QuantizedImage<T, TP> image, EndianBinaryWriter writer)
-            where T : IPackedVector<TP>
+        private void WriteImageData<T, TC, TP>(QuantizedImage<T, TC, TP> image, EndianBinaryWriter writer)
+            where T : IPixelAccessor<TC, TP>
+            where TC : IPackedVector<TP>
             where TP : struct
         {
             byte[] indexedPixels = image.Pixels;

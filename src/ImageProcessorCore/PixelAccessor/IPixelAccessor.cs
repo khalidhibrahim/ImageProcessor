@@ -6,14 +6,14 @@
 namespace ImageProcessorCore
 {
     using System;
-    
+
     /// <summary>
     /// Encapsulates properties to provides per-pixel access to an images pixels.
     /// </summary>
-    /// <typeparam name="T">The pixel format.</typeparam>
+    /// <typeparam name="TC">The pixel format.</typeparam>
     /// <typeparam name="TP">The packed format. <example>long, float.</example></typeparam>
-    public interface IPixelAccessor<T, TP> : IPixelAccessor
-        where T : IPackedVector<TP>
+    public interface IPixelAccessor<TC, TP> : IPixelAccessor
+        where TC : IPackedVector<TP>
         where TP : struct
     {
         /// <summary>
@@ -27,8 +27,8 @@ namespace ImageProcessorCore
         /// The y-coordinate of the pixel. Must be greater
         /// than zero and smaller than the width of the pixel.
         /// </param>
-        /// <returns>The <see cref="T"/> at the specified position.</returns>
-        T this[int x, int y]
+        /// <returns>The <see cref="TC"/> at the specified position.</returns>
+        TC this[int x, int y]
         {
             get;
             set;
