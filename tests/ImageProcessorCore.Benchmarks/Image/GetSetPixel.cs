@@ -11,7 +11,7 @@
     public class GetSetPixel
     {
         [Benchmark(Baseline = true, Description = "System.Drawing GetSet Pixel")]
-        public SystemColor ResizeSystemDrawing()
+        public SystemColor GetSetPixelSystemDrawing()
         {
             using (Bitmap source = new Bitmap(400, 400))
             {
@@ -21,7 +21,7 @@
         }
 
         [Benchmark(Description = "ImageProcessorCore GetSet Pixel")]
-        public CoreColor ResizeCore()
+        public CoreColor GetSetPixelCore()
         {
             CoreImage image = new CoreImage(400, 400);
             using (ColorPixelAccessor imagePixels = image.Lock())
