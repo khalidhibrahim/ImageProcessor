@@ -147,7 +147,7 @@ namespace ImageProcessorCore
         /// <inheritdoc/>
         public T Lock()
         {
-            return (T)Activator.CreateInstance(typeof(T), this);
+            return (T)typeof(T).GetInstance(this);
         }
 
         /// <summary>

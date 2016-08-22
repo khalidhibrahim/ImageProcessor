@@ -46,7 +46,7 @@ namespace ImageProcessorCore
         /// <param name="image">
         /// The image to provide pixel access for.
         /// </param>
-        public ColorPixelAccessor(IImageBase image)
+        public ColorPixelAccessor(ImageBase<ColorPixelAccessor, Color, uint> image)
         {
             Guard.NotNull(image, nameof(image));
             Guard.MustBeGreaterThan(image.Width, 0, "image width");
@@ -55,7 +55,7 @@ namespace ImageProcessorCore
             this.Width = image.Width;
             this.Height = image.Height;
 
-            this.pixelsHandle = GCHandle.Alloc(((ImageBase<ColorPixelAccessor, Color, uint>)image).Pixels, GCHandleType.Pinned);
+            this.pixelsHandle = GCHandle.Alloc(image.Pixels, GCHandleType.Pinned);
             this.pixelsBase = (Color*)this.pixelsHandle.AddrOfPinnedObject().ToPointer();
         }
 

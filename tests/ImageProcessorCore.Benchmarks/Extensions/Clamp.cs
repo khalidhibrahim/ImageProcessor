@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImageProcessorCore.Benchmarks.Color
+namespace ImageProcessorCore.Benchmarks.Extensions
 {
     using BenchmarkDotNet.Attributes;
 
@@ -27,7 +27,7 @@ namespace ImageProcessorCore.Benchmarks.Color
         {
             double value = 256;
 
-            if(value > 255)
+            if (value > 255)
             {
                 return 255;
             }
