@@ -9,13 +9,11 @@ namespace ImageProcessorCore.Processors
     /// The Roberts Cross operator filter.
     /// <see href="http://en.wikipedia.org/wiki/Roberts_cross"/>
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class RobertsCrossProcessor<T, TC, TP> : EdgeDetector2DFilter<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class RobertsCrossProcessor<TColor, TPacked> : EdgeDetector2DFilter<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <inheritdoc/>
         public override float[,] KernelX => new float[,]

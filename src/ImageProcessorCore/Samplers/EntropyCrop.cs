@@ -8,26 +8,24 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Crops an image to the area of greatest entropy.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to crop.</param>
         /// <param name="threshold">The threshold for entropic density.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TC, TP> EntropyCrop<T, TC, TP>(this Image<T, TC, TP> source, float threshold = .5f, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public static Image<TColor, TPacked> EntropyCrop<TColor, TPacked>(this Image<TColor, TPacked> source, float threshold = .5f, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            EntropyCropProcessor<T, TC, TP> processor = new EntropyCropProcessor<T, TC, TP>(threshold);
+            EntropyCropProcessor<TColor, TPacked> processor = new EntropyCropProcessor<TColor, TPacked>(threshold);
             processor.OnProgress += progressHandler;
 
             try

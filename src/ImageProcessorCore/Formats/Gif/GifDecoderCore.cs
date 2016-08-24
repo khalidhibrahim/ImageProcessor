@@ -11,18 +11,16 @@ namespace ImageProcessorCore.Formats
     /// <summary>
     /// Performs the gif decoding operation.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    internal class GifDecoderCore<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    internal class GifDecoderCore<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// The image to decode the information to.
         /// </summary>
-        private Image<T, TC, TP> decodedImage;
+        private Image<TColor, TPacked> decodedImage;
 
         /// <summary>
         /// The currently loaded stream.
@@ -37,7 +35,7 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// The current frame.
         /// </summary>
-        private TC[] currentFrame;
+        private TColor[] currentFrame;
 
         /// <summary>
         /// The logical screen descriptor.
@@ -54,7 +52,7 @@ namespace ImageProcessorCore.Formats
         /// </summary>
         /// <param name="image">The image to decode to.</param>
         /// <param name="stream">The stream containing image data. </param>
-        public void Decode(Image<T, TC, TP> image, Stream stream)
+        public void Decode(Image<TColor, TPacked> image, Stream stream)
         {
             this.decodedImage = image;
 
@@ -294,15 +292,15 @@ namespace ImageProcessorCore.Formats
 
             if (this.currentFrame == null)
             {
-                this.currentFrame = new TC[imageWidth * imageHeight];
+                this.currentFrame = new TColor[imageWidth * imageHeight];
             }
 
-            TC[] lastFrame = null;
+            TColor[] lastFrame = null;
 
             if (this.graphicsControlExtension != null &&
                 this.graphicsControlExtension.DisposalMethod == DisposalMethod.RestoreToPrevious)
             {
-                lastFrame = new TC[imageWidth * imageHeight];
+                lastFrame = new TColor[imageWidth * imageHeight];
 
                 Array.Copy(this.currentFrame, lastFrame, lastFrame.Length);
             }
@@ -361,7 +359,7 @@ namespace ImageProcessorCore.Formats
                         // Stored in r-> g-> b-> a order.
                         int indexOffset = index * 3;
 
-                        TC pixel = default(TC);
+                        TColor pixel = default(TColor);
                         pixel.PackFromBytes(colorTable[indexOffset], colorTable[indexOffset + 1], colorTable[indexOffset + 2], 255);
                         this.currentFrame[offset] = pixel;
                     }
@@ -370,11 +368,11 @@ namespace ImageProcessorCore.Formats
                 }
             }
 
-            TC[] pixels = new TC[imageWidth * imageHeight];
+            TColor[] pixels = new TColor[imageWidth * imageHeight];
 
             Array.Copy(this.currentFrame, pixels, pixels.Length);
 
-            ImageBase<T, TC, TP> currentImage;
+            ImageBase<TColor, TPacked> currentImage;
 
             if (this.decodedImage.Pixels == null)
             {
@@ -389,7 +387,7 @@ namespace ImageProcessorCore.Formats
             }
             else
             {
-                ImageFrame<T, TC, TP> frame = new ImageFrame<T, TC, TP>();
+                ImageFrame<TColor, TPacked> frame = new ImageFrame<TColor, TPacked>();
 
                 currentImage = frame;
                 currentImage.SetPixels(imageWidth, imageHeight, pixels);
@@ -414,7 +412,7 @@ namespace ImageProcessorCore.Formats
                             offset = (y * imageWidth) + x;
 
                             // Stored in r-> g-> b-> a order.
-                            this.currentFrame[offset] = default(TC);
+                            this.currentFrame[offset] = default(TColor);
                         }
                     }
                 }

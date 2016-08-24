@@ -10,13 +10,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Converts the colors of the image recreating an old Polaroid effect.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class PolaroidProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class PolaroidProcessor<TColor, TPacked> : ColorMatrixFilter<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <inheritdoc/>
         public override Matrix4x4 Matrix => new Matrix4x4()
@@ -36,15 +34,15 @@ namespace ImageProcessorCore.Processors
         };
 
         /// <inheritdoc/>
-        protected override void AfterApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void AfterApply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            TC packedV = default(TC);
+            TColor packedV = default(TColor);
             packedV.PackFromBytes(102, 34, 0, 255); // Very dark orange [Brown tone]
-            new VignetteProcessor<T, TC, TP> { VignetteColor = packedV }.Apply(target, target, sourceRectangle);
+            new VignetteProcessor<TColor, TPacked> { VignetteColor = packedV }.Apply(target, target, sourceRectangle);
 
-            TC packedG = default(TC);
+            TColor packedG = default(TColor);
             packedG.PackFromBytes(255, 153, 102, 178); // Light orange
-            new GlowProcessor<T, TC, TP> { GlowColor = packedG, Radius = target.Width / 4F }.Apply(target, target, sourceRectangle);
+            new GlowProcessor<TColor, TPacked> { GlowColor = packedG, Radius = target.Width / 4F }.Apply(target, target, sourceRectangle);
         }
     }
 }

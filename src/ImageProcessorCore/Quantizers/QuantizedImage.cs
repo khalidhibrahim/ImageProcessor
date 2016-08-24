@@ -11,23 +11,21 @@ namespace ImageProcessorCore.Quantizers
     /// <summary>
     /// Represents a quantized image where the pixels indexed by a color palette.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class QuantizedImage<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class QuantizedImage<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuantizedImage{T, TC, TP}"/> class.
+        /// Initializes a new instance of the <see cref="QuantizedImage{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="width">The image width.</param>
         /// <param name="height">The image height.</param>
         /// <param name="palette">The color palette.</param>
         /// <param name="pixels">The quantized pixels.</param>
         /// <param name="transparentIndex">The transparency index.</param>
-        public QuantizedImage(int width, int height, TC[] palette, byte[] pixels, int transparentIndex = -1)
+        public QuantizedImage(int width, int height, TColor[] palette, byte[] pixels, int transparentIndex = -1)
         {
             Guard.MustBeGreaterThan(width, 0, nameof(width));
             Guard.MustBeGreaterThan(height, 0, nameof(height));
@@ -60,7 +58,7 @@ namespace ImageProcessorCore.Quantizers
         /// <summary>
         /// Gets the color palette of this <see cref="T:QuantizedImage"/>.
         /// </summary>
-        public TC[] Palette { get; }
+        public TColor[] Palette { get; }
 
         /// <summary>
         /// Gets the pixels of this <see cref="T:QuantizedImage"/>.
@@ -78,13 +76,13 @@ namespace ImageProcessorCore.Quantizers
         /// <returns>
         /// The <see cref="Image"/>
         /// </returns>
-        public Image<T, TC, TP> ToImage()
+        public Image<TColor, TPacked> ToImage()
         {
-            Image<T, TC, TP> image = new Image<T, TC, TP>();
+            Image<TColor, TPacked> image = new Image<TColor, TPacked>();
 
             int pixelCount = this.Pixels.Length;
             int palletCount = this.Palette.Length - 1;
-            TC[] pixels = new TC[pixelCount];
+            TColor[] pixels = new TColor[pixelCount];
 
             Parallel.For(
                 0,
@@ -92,7 +90,7 @@ namespace ImageProcessorCore.Quantizers
                 Bootstrapper.Instance.ParallelOptions,
                 i =>
                     {
-                        TC color = this.Palette[Math.Min(palletCount, this.Pixels[i])];
+                        TColor color = this.Palette[Math.Min(palletCount, this.Pixels[i])];
                         pixels[i] = color;
                     });
 

@@ -13,13 +13,11 @@ namespace ImageProcessorCore.Quantizers
     /// Encapsulates methods to calculate the colour palette if an image using an Octree pattern.
     /// <see href="http://msdn.microsoft.com/en-us/library/aa479306.aspx"/>
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public sealed class OctreeQuantizer<T, TC, TP> : Quantizer<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public sealed class OctreeQuantizer<TColor, TPacked> : Quantizer<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// Stores the tree
@@ -32,7 +30,7 @@ namespace ImageProcessorCore.Quantizers
         private int colors;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OctreeQuantizer{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="OctreeQuantizer{TColor, TPacked}"/> class.
         /// </summary>
         /// <remarks>
         /// The Octree quantizer is a two pass algorithm. The initial pass sets up the Octree,
@@ -44,7 +42,7 @@ namespace ImageProcessorCore.Quantizers
         }
 
         /// <inheritdoc/>
-        public override QuantizedImage<T, TC, TP> Quantize(ImageBase<T, TC, TP> image, int maxColors)
+        public override QuantizedImage<TColor, TPacked> Quantize(ImageBase<TColor, TPacked> image, int maxColors)
         {
             this.colors = maxColors.Clamp(1, 255);
 
@@ -67,7 +65,7 @@ namespace ImageProcessorCore.Quantizers
         /// This function need only be overridden if your quantize algorithm needs two passes,
         /// such as an Octree quantizer.
         /// </remarks>
-        protected override void InitialQuantizePixel(TC pixel)
+        protected override void InitialQuantizePixel(TColor pixel)
         {
             // Add the color to the Octree
             this.octree.AddColor(pixel);
@@ -80,7 +78,7 @@ namespace ImageProcessorCore.Quantizers
         /// <returns>
         /// The quantized value
         /// </returns>
-        protected override byte QuantizePixel(TC pixel)
+        protected override byte QuantizePixel(TColor pixel)
         {
             // The color at [maxColors] is set to transparent
             byte paletteIndex = (byte)this.colors;
@@ -100,15 +98,15 @@ namespace ImageProcessorCore.Quantizers
         /// <returns>
         /// The new color palette
         /// </returns>
-        protected override List<TC> GetPalette()
+        protected override List<TColor> GetPalette()
         {
             // First off convert the Octree to maxColors colors
-            List<TC> palette = this.octree.Palletize(Math.Max(this.colors, 1));
+            List<TColor> palette = this.octree.Palletize(Math.Max(this.colors, 1));
 
             int diff = this.colors - palette.Count;
             if (diff > 0)
             {
-                palette.AddRange(Enumerable.Repeat(default(TC), diff));
+                palette.AddRange(Enumerable.Repeat(default(TColor), diff));
             }
             this.TransparentIndex = this.colors;
 
@@ -161,7 +159,7 @@ namespace ImageProcessorCore.Quantizers
             /// <summary>
             /// Cache the previous color quantized
             /// </summary>
-            private TP previousColor;
+            private TPacked previousColor;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Octree"/> class.
@@ -175,7 +173,7 @@ namespace ImageProcessorCore.Quantizers
                 this.Leaves = 0;
                 this.reducibleNodes = new OctreeNode[9];
                 this.root = new OctreeNode(0, this.maxColorBits, this);
-                this.previousColor = default(TP);
+                this.previousColor = default(TPacked);
                 this.previousNode = null;
             }
 
@@ -193,11 +191,11 @@ namespace ImageProcessorCore.Quantizers
             /// Add a given color value to the Octree
             /// </summary>
             /// <param name="pixel">
-            /// The <see cref="TC"/>containing color information to add.
+            /// The <see cref="TColor"/>containing color information to add.
             /// </param>
-            public void AddColor(TC pixel)
+            public void AddColor(TColor pixel)
             {
-                TP packed = pixel.GetPackedValue();
+                TPacked packed = pixel.GetPackedValue();
                 // Check if this request is for the same color as the last
                 if (this.previousColor.Equals(packed))
                 {
@@ -226,9 +224,9 @@ namespace ImageProcessorCore.Quantizers
             /// </summary>
             /// <param name="colorCount">The maximum number of colors</param>
             /// <returns>
-            /// An <see cref="List{TC}"/> with the palletized colors
+            /// An <see cref="List{TColor}"/> with the palletized colors
             /// </returns>
-            public List<TC> Palletize(int colorCount)
+            public List<TColor> Palletize(int colorCount)
             {
                 while (this.Leaves > colorCount)
                 {
@@ -236,7 +234,7 @@ namespace ImageProcessorCore.Quantizers
                 }
 
                 // Now palletize the nodes
-                List<TC> palette = new List<TC>(this.Leaves);
+                List<TColor> palette = new List<TColor>(this.Leaves);
                 int paletteIndex = 0;
                 this.root.ConstructPalette(palette, ref paletteIndex);
 
@@ -247,11 +245,11 @@ namespace ImageProcessorCore.Quantizers
             /// <summary>
             /// Get the palette index for the passed color
             /// </summary>
-            /// <param name="pixel">The <see cref="TC"/> containing the pixel data.</param>
+            /// <param name="pixel">The <see cref="TColor"/> containing the pixel data.</param>
             /// <returns>
             /// The index of the given structure.
             /// </returns>
-            public int GetPaletteIndex(TC pixel)
+            public int GetPaletteIndex(TColor pixel)
             {
                 return this.root.GetPaletteIndex(pixel, 0);
             }
@@ -379,7 +377,7 @@ namespace ImageProcessorCore.Quantizers
                 /// <param name="colorBits">The number of significant color bits</param>
                 /// <param name="level">The level in the tree</param>
                 /// <param name="octree">The tree to which this node belongs</param>
-                public void AddColor(TC pixel, int colorBits, int level, Octree octree)
+                public void AddColor(TColor pixel, int colorBits, int level, Octree octree)
                 {
                     // Update the color information if this is a leaf
                     if (this.leaf)
@@ -447,7 +445,7 @@ namespace ImageProcessorCore.Quantizers
                 /// </summary>
                 /// <param name="palette">The palette</param>
                 /// <param name="index">The current palette index</param>
-                public void ConstructPalette(List<TC> palette, ref int index)
+                public void ConstructPalette(List<TColor> palette, ref int index)
                 {
                     if (this.leaf)
                     {
@@ -459,7 +457,7 @@ namespace ImageProcessorCore.Quantizers
                         byte b = (this.blue / this.pixelCount).ToByte();
 
                         // And set the color of the palette entry
-                        TC pixel = default(TC);
+                        TColor pixel = default(TColor);
                         pixel.PackFromBytes(r, g, b, 255);
                         palette.Add(pixel);
                     }
@@ -479,12 +477,12 @@ namespace ImageProcessorCore.Quantizers
                 /// <summary>
                 /// Return the palette index for the passed color
                 /// </summary>
-                /// <param name="pixel">The <see cref="TC"/> representing the pixel.</param>
+                /// <param name="pixel">The <see cref="TColor"/> representing the pixel.</param>
                 /// <param name="level">The level.</param>
                 /// <returns>
                 /// The <see cref="int"/> representing the index of the pixel in the palette.
                 /// </returns>
-                public int GetPaletteIndex(TC pixel, int level)
+                public int GetPaletteIndex(TColor pixel, int level)
                 {
                     int index = this.paletteIndex;
 
@@ -515,7 +513,7 @@ namespace ImageProcessorCore.Quantizers
                 /// <param name="pixel">
                 /// The pixel to add.
                 /// </param>
-                public void Increment(TC pixel)
+                public void Increment(TColor pixel)
                 {
                     this.pixelCount++;
                     byte[] components = pixel.ToBytes();

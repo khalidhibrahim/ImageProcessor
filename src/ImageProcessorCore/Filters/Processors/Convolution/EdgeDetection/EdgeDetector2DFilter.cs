@@ -9,23 +9,21 @@ namespace ImageProcessorCore.Processors
     /// Defines a filter that detects edges within an image using two
     /// one-dimensional matrices.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public abstract class EdgeDetector2DFilter<T, TC, TP> : Convolution2DFilter<T, TC, TP>, IEdgeDetectorFilter<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public abstract class EdgeDetector2DFilter<TColor, TPacked> : Convolution2DFilter<TColor, TPacked>, IEdgeDetectorFilter<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <inheritdoc/>
         public bool Grayscale { get; set; }
 
         /// <inheritdoc/>
-        protected override void OnApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void OnApply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
             if (this.Grayscale)
             {
-                new GrayscaleBt709Processor<T, TC, TP>().Apply(source, source, sourceRectangle);
+                new GrayscaleBt709Processor<TColor, TPacked>().Apply(source, source, sourceRectangle);
             }
         }
     }

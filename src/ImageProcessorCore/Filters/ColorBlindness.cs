@@ -8,24 +8,22 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Applies the given colorblindness simulator to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="colorBlindness">The type of color blindness simulator to apply.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> ColorBlindness<T, TC, TP>(this Image<T, TC, TP> source, ColorBlindness colorBlindness, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
+        public static Image<TColor, TPacked> ColorBlindness<TColor, TPacked>(this Image<TColor, TPacked> source, ColorBlindness colorBlindness, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             return ColorBlindness(source, colorBlindness, source.Bounds, progressHandler);
         }
@@ -33,55 +31,53 @@ namespace ImageProcessorCore
         /// <summary>
         /// Applies the given colorblindness simulator to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="colorBlindness">The type of color blindness simulator to apply.</param>
         /// <param name="rectangle">
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> ColorBlindness<T, TC, TP>(this Image<T, TC, TP> source, ColorBlindness colorBlindness, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
+        public static Image<TColor, TPacked> ColorBlindness<TColor, TPacked>(this Image<TColor, TPacked> source, ColorBlindness colorBlindness, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            IImageProcessor<T, TC, TP> processor;
+            IImageProcessor<TColor, TPacked> processor;
 
             switch (colorBlindness)
             {
                 case ImageProcessorCore.ColorBlindness.Achromatomaly:
-                    processor = new AchromatomalyProcessor<T, TC, TP>();
+                    processor = new AchromatomalyProcessor<TColor, TPacked>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Achromatopsia:
-                    processor = new AchromatopsiaProcessor<T, TC, TP>();
+                    processor = new AchromatopsiaProcessor<TColor, TPacked>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Deuteranomaly:
-                    processor = new DeuteranomalyProcessor<T, TC, TP>();
+                    processor = new DeuteranomalyProcessor<TColor, TPacked>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Deuteranopia:
-                    processor = new DeuteranopiaProcessor<T, TC, TP>();
+                    processor = new DeuteranopiaProcessor<TColor, TPacked>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Protanomaly:
-                    processor = new ProtanomalyProcessor<T, TC, TP>();
+                    processor = new ProtanomalyProcessor<TColor, TPacked>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Protanopia:
-                    processor = new ProtanopiaProcessor<T, TC, TP>();
+                    processor = new ProtanopiaProcessor<TColor, TPacked>();
                     break;
 
                 case ImageProcessorCore.ColorBlindness.Tritanomaly:
-                    processor = new TritanomalyProcessor<T, TC, TP>();
+                    processor = new TritanomalyProcessor<TColor, TPacked>();
                     break;
 
                 default:
-                    processor = new TritanopiaProcessor<T, TC, TP>();
+                    processor = new TritanopiaProcessor<TColor, TPacked>();
                     break;
             }
 

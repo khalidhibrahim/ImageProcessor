@@ -17,18 +17,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Calculates the target location and bounds to perform the resize operation against.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image.</param>
         /// <param name="options">The resize options.</param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        public static Rectangle CalculateTargetLocationAndBounds<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public static Rectangle CalculateTargetLocationAndBounds<TColor, TPacked>(ImageBase<TColor, TPacked> source, ResizeOptions options)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             switch (options.Mode)
             {
@@ -52,18 +50,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Calculates the target rectangle for crop mode.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image.</param>
         /// <param name="options">The resize options.</param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateCropRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private static Rectangle CalculateCropRectangle<TColor, TPacked>(ImageBase<TColor, TPacked> source, ResizeOptions options)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int width = options.Size.Width;
             int height = options.Size.Height;
@@ -175,18 +171,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Calculates the target rectangle for pad mode.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image.</param>
         /// <param name="options">The resize options.</param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculatePadRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private static Rectangle CalculatePadRectangle<TColor, TPacked>(ImageBase<TColor, TPacked> source, ResizeOptions options)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int width = options.Size.Width;
             int height = options.Size.Height;
@@ -260,18 +254,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Calculates the target rectangle for box pad mode.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image.</param>
         /// <param name="options">The resize options.</param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateBoxPadRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private static Rectangle CalculateBoxPadRectangle<TColor, TPacked>(ImageBase<TColor, TPacked> source, ResizeOptions options)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int width = options.Size.Width;
             int height = options.Size.Height;
@@ -351,18 +343,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Calculates the target rectangle for max mode.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image.</param>
         /// <param name="options">The resize options.</param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateMaxRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private static Rectangle CalculateMaxRectangle<TColor, TPacked>(ImageBase<TColor, TPacked> source, ResizeOptions options)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int width = options.Size.Width;
             int height = options.Size.Height;
@@ -396,18 +386,16 @@ namespace ImageProcessorCore
         /// <summary>
         /// Calculates the target rectangle for min mode.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The source image.</param>
         /// <param name="options">The resize options.</param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
         /// </returns>
-        private static Rectangle CalculateMinRectangle<T, TC, TP>(ImageBase<T, TC, TP> source, ResizeOptions options)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private static Rectangle CalculateMinRectangle<TColor, TPacked>(ImageBase<TColor, TPacked> source, ResizeOptions options)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int width = options.Size.Width;
             int height = options.Size.Height;

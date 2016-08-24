@@ -8,22 +8,20 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Adjusts an image so that its orientation is suitable for viewing.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to crop.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TC, TP> AutoOrient<T, TC, TP>(this Image<T, TC, TP> source, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public static Image<TColor, TPacked> AutoOrient<TColor, TPacked>(this Image<TColor, TPacked> source, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             Orientation orientation = GetExifOrientation(source);
 
@@ -63,14 +61,13 @@ namespace ImageProcessorCore
         /// Returns the current EXIF orientation
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TC"></typeparam>
-        /// <typeparam name="TP"></typeparam>
+        /// <typeparam name="TColor"></typeparam>
+        /// <typeparam name="TPacked"></typeparam>
         /// <param name="source"></param>
         /// <returns>THe <see cref="Orientation"/></returns>
-        private static Orientation GetExifOrientation<T, TC, TP>(Image<T, TC, TP> source)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private static Orientation GetExifOrientation<TColor, TPacked>(Image<TColor, TPacked> source)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             if (source.ExifProfile == null)
             {

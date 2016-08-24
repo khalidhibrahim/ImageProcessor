@@ -17,13 +17,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Encapsulates methods to alter the pixels of an image.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public interface IImageProcessor<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public interface IImageProcessor<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// Event fires when each row of the source image has been processed.
@@ -63,7 +61,7 @@ namespace ImageProcessorCore.Processors
         /// <exception cref="System.ArgumentException">
         /// <paramref name="sourceRectangle"/> doesnt fit the dimension of the image.
         /// </exception>
-        void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle sourceRectangle);
+        void Apply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle sourceRectangle);
 
         /// <summary>
         /// Applies the process to the specified portion of the specified <see cref="ImageBase{T, TP}"/> at the specified
@@ -84,6 +82,6 @@ namespace ImageProcessorCore.Processors
         /// The method keeps the source image unchanged and returns the
         /// the result of image process as new image.
         /// </remarks>
-        void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, int width, int height, Rectangle targetRectangle, Rectangle sourceRectangle);
+        void Apply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, int width, int height, Rectangle targetRectangle, Rectangle sourceRectangle);
     }
 }

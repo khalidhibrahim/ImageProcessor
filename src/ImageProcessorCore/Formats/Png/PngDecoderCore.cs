@@ -80,9 +80,8 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Decodes the stream to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to decode to.</param>
         /// <param name="stream">The stream containing image data. </param>
         /// <exception cref="ImageFormatException">
@@ -91,12 +90,11 @@ namespace ImageProcessorCore.Formats
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown if the image is larger than the maximum allowable size.
         /// </exception>
-        public void Decode<T, TC, TP>(Image<T, TC, TP> image, Stream stream)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public void Decode<TColor, TPacked>(Image<TColor, TPacked> image, Stream stream)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            Image<T, TC, TP> currentImage = image;
+            Image<TColor, TPacked> currentImage = image;
             this.currentStream = stream;
             this.currentStream.Seek(8, SeekOrigin.Current);
 
@@ -151,8 +149,8 @@ namespace ImageProcessorCore.Formats
                         + $"max allowed size '{image.MaxWidth}x{image.MaxHeight}'");
                 }
 
-                TC[] pixels = new TC[this.header.Width * this.header.Height];
-                this.ReadScanlines<T, TC, TP>(dataStream, pixels);
+                TColor[] pixels = new TColor[this.header.Width * this.header.Height];
+                this.ReadScanlines<TColor, TPacked>(dataStream, pixels);
                 image.SetPixels(this.header.Width, this.header.Height, pixels);
             }
         }
@@ -160,15 +158,13 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Reads the data chunk containing physical dimension data.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to read to.</param>
         /// <param name="data">The data containing physical data.</param>
-        private void ReadPhysicalChunk<T, TC, TP>(Image<T, TC, TP> image, byte[] data)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void ReadPhysicalChunk<TColor, TPacked>(Image<TColor, TPacked> image, byte[] data)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             Array.Reverse(data, 0, 4);
             Array.Reverse(data, 4, 4);
@@ -226,15 +222,13 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Reads the scanlines within the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="dataStream">The <see cref="MemoryStream"/> containing data.</param>
         /// <param name="pixels"> The pixel data.</param>
-        private void ReadScanlines<T, TC, TP>(MemoryStream dataStream, TC[] pixels)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void ReadScanlines<TColor, TPacked>(MemoryStream dataStream, TColor[] pixels)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             this.bytesPerPixel = this.CalculateBytesPerPixel();
             this.bytesPerScanline = this.CalculateScanlineLength() + 1;
@@ -253,7 +247,7 @@ namespace ImageProcessorCore.Formats
                     decompressedStream.Flush();
 
                     byte[] decompressedBytes = decompressedStream.ToArray();
-                    DecodePixelData<T, TC, TP>(decompressedBytes, pixels);
+                    DecodePixelData<TColor, TPacked>(decompressedBytes, pixels);
                 }
             }
         }
@@ -261,15 +255,13 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Decodes the raw pixel data row by row
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="pixelData">The pixel data.</param>
         /// <param name="pixels">The image pixels.</param>
-        private void DecodePixelData<T, TC, TP>(byte[] pixelData, TC[] pixels)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void DecodePixelData<TColor, TPacked>(byte[] pixelData, TColor[] pixels)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             byte[] previousScanline = new byte[this.bytesPerScanline];
 
@@ -317,23 +309,21 @@ namespace ImageProcessorCore.Formats
                 }
 
                 previousScanline = defilteredScanline;
-                ProcessDefilteredScanline<T, TC, TP>(defilteredScanline, y, pixels);
+                ProcessDefilteredScanline<TColor, TPacked>(defilteredScanline, y, pixels);
             }
         }
 
         /// <summary>
         /// Processes the defiltered scanline filling the image pixel data
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="defilteredScanline"></param>
         /// <param name="row">The current image row.</param>
         /// <param name="pixels">The image pixels</param>
-        private void ProcessDefilteredScanline<T, TC, TP>(byte[] defilteredScanline, int row, TC[] pixels)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void ProcessDefilteredScanline<TColor, TPacked>(byte[] defilteredScanline, int row, TColor[] pixels)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             switch (this.PngColorType)
             {
@@ -345,7 +335,7 @@ namespace ImageProcessorCore.Formats
 
                         byte intensity = defilteredScanline[offset];
 
-                        TC color = default(TC);
+                        TColor color = default(TColor);
                         color.PackFromBytes(intensity, intensity, intensity, 255);
                         pixels[(row * this.header.Width) + x] = color;
                     }
@@ -361,7 +351,7 @@ namespace ImageProcessorCore.Formats
                         byte intensity = defilteredScanline[offset];
                         byte alpha = defilteredScanline[offset + bytesPerSample];
 
-                        TC color = default(TC);
+                        TColor color = default(TColor);
                         color.PackFromBytes(intensity, intensity, intensity, alpha);
                         pixels[(row * this.header.Width) + x] = color;
                     }
@@ -383,7 +373,7 @@ namespace ImageProcessorCore.Formats
                             int pixelOffset = index * 3;
 
                             byte a = this.paletteAlpha.Length > index ? this.paletteAlpha[index] : (byte)255;
-                            TC color = default(TC);
+                            TColor color = default(TColor);
                             if (a > 0)
                             {
                                 byte r = this.palette[pixelOffset];
@@ -407,7 +397,7 @@ namespace ImageProcessorCore.Formats
                             byte g = this.palette[pixelOffset + 1];
                             byte b = this.palette[pixelOffset + 2];
 
-                            TC color = default(TC);
+                            TColor color = default(TColor);
                             color.PackFromBytes(r, g, b, 255);
                             pixels[offset] = color;
                         }
@@ -425,7 +415,7 @@ namespace ImageProcessorCore.Formats
                         byte g = defilteredScanline[offset + bytesPerSample];
                         byte b = defilteredScanline[offset + 2 * bytesPerSample];
 
-                        TC color = default(TC);
+                        TColor color = default(TColor);
                         color.PackFromBytes(r, g, b, 255);
                         pixels[(row * this.header.Width) + x] = color;
                     }
@@ -443,7 +433,7 @@ namespace ImageProcessorCore.Formats
                         byte b = defilteredScanline[offset + 2 * bytesPerSample];
                         byte a = defilteredScanline[offset + 3 * bytesPerSample];
 
-                        TC color = default(TC);
+                        TColor color = default(TColor);
                         color.PackFromBytes(r, g, b, a);
                         pixels[(row * this.header.Width) + x] = color;
                     }
@@ -458,15 +448,13 @@ namespace ImageProcessorCore.Formats
         /// <summary>
         /// Reads a text chunk containing image properties from the data.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="image">The image to decode to.</param>
         /// <param name="data">The <see cref="T:byte[]"/> containing  data.</param>
-        private void ReadTextChunk<T, TC, TP>(Image<T, TC, TP> image, byte[] data)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void ReadTextChunk<TColor, TPacked>(Image<TColor, TPacked> image, byte[] data)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int zeroIndex = 0;
 

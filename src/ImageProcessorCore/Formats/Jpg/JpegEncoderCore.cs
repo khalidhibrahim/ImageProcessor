@@ -339,10 +339,9 @@ namespace ImageProcessorCore.Formats
 
         // toYCbCr converts the 8x8 region of m whose top-left corner is p to its
         // YCbCr values.
-        private void ToYCbCr<T, TC, TP>(T pixels, int x, int y, Block yBlock, Block cbBlock, Block crBlock)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void ToYCbCr<TColor, TPacked>(PixelAccessor<TColor, TPacked> pixels, int x, int y, Block yBlock, Block cbBlock, Block crBlock)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             int xmax = pixels.Width - 1;
             int ymax = pixels.Height - 1;
@@ -431,10 +430,9 @@ namespace ImageProcessorCore.Formats
 
         // Encode writes the Image m to w in JPEG 4:2:0 baseline format with the given
         // options. Default parameters are used if a nil *Options is passed.
-        public void Encode<T, TC, TP>(Image<T, TC, TP> image, Stream stream, int quality, JpegSubsample sample)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public void Encode<TColor, TPacked>(Image<TColor, TPacked> image, Stream stream, int quality, JpegSubsample sample)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             Guard.NotNull(image, nameof(image));
             Guard.NotNull(stream, nameof(stream));
@@ -504,9 +502,9 @@ namespace ImageProcessorCore.Formats
             this.WriteDHT(componentCount);
 
             // Write the image data.
-            using (T pixels = image.Lock())
+            using (PixelAccessor<TColor, TPacked> pixels = image.Lock())
             {
-                this.WriteSOS<T, TC, TP>(pixels);
+                this.WriteSOS<TColor, TPacked>(pixels);
             }
 
             // Write the End Of Image marker.
@@ -572,10 +570,9 @@ namespace ImageProcessorCore.Formats
             this.outputStream.Write(this.buffer, 0, 4);
         }
 
-        private void WriteProfiles<T, TC, TP>(Image<T, TC, TP> image)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void WriteProfiles<TColor, TPacked>(Image<TColor, TPacked> image)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             WriteProfile(image.ExifProfile);
         }
@@ -713,10 +710,9 @@ namespace ImageProcessorCore.Formats
         /// Writes the StartOfScan marker.
         /// </summary>
         /// <param name="pixels">The pixel accessor providing acces to the image pixels.</param>
-        private void WriteSOS<T, TC, TP>(T pixels)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void WriteSOS<TColor, TPacked>(PixelAccessor<TColor, TPacked> pixels)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             // TODO: We should allow grayscale writing.
             this.outputStream.Write(this.SOSHeaderYCbCr, 0, this.SOSHeaderYCbCr.Length);
@@ -724,10 +720,10 @@ namespace ImageProcessorCore.Formats
             switch (this.subsample)
             {
                 case JpegSubsample.Ratio444:
-                    this.Encode444<T, TC, TP>(pixels);
+                    this.Encode444<TColor, TPacked>(pixels);
                     break;
                 case JpegSubsample.Ratio420:
-                    this.Encode420<T, TC, TP>(pixels);
+                    this.Encode420<TColor, TPacked>(pixels);
                     break;
             }
 
@@ -741,10 +737,9 @@ namespace ImageProcessorCore.Formats
         /// Encodes the image with no subsampling.
         /// </summary>
         /// <param name="pixels">The pixel accessor providing acces to the image pixels.</param>
-        private void Encode444<T, TC, TP>(T pixels)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void Encode444<TColor, TPacked>(PixelAccessor<TColor, TPacked> pixels)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             Block b = new Block();
             Block cb = new Block();
@@ -755,7 +750,7 @@ namespace ImageProcessorCore.Formats
             {
                 for (int x = 0; x < pixels.Width; x += 8)
                 {
-                    this.ToYCbCr<T, TC, TP>(pixels, x, y, b, cb, cr);
+                    this.ToYCbCr<TColor, TPacked>(pixels, x, y, b, cb, cr);
                     prevDCY = this.WriteBlock(b, QuantIndex.Luminance, prevDCY);
                     prevDCCb = this.WriteBlock(cb, QuantIndex.Chrominance, prevDCCb);
                     prevDCCr = this.WriteBlock(cr, QuantIndex.Chrominance, prevDCCr);
@@ -768,10 +763,9 @@ namespace ImageProcessorCore.Formats
         /// at a factor of 2 both horizontally and vertically.
         /// </summary>
         /// <param name="pixels">The pixel accessor providing acces to the image pixels.</param>
-        private void Encode420<T, TC, TP>(T pixels)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        private void Encode420<TColor, TPacked>(PixelAccessor<TColor, TPacked> pixels)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             Block b = new Block();
             Block[] cb = new Block[4];
@@ -790,7 +784,7 @@ namespace ImageProcessorCore.Formats
                         int xOff = (i & 1) * 8;
                         int yOff = (i & 2) * 4;
 
-                        this.ToYCbCr<T, TC, TP>(pixels, x + xOff, y + yOff, b, cb[i], cr[i]);
+                        this.ToYCbCr<TColor, TPacked>(pixels, x + xOff, y + yOff, b, cb[i], cr[i]);
                         prevDCY = this.WriteBlock(b, QuantIndex.Luminance, prevDCY);
                     }
 

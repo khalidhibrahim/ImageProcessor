@@ -8,38 +8,36 @@ namespace ImageProcessorCore
     using ImageProcessorCore.Quantizers;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Applies quantization to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="mode">The quantization mode to apply to perform the operation.</param>
         /// <param name="maxColors">The maximum number of colors to return. Defaults to 256.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> Quantize<T, TC, TP>(this Image<T, TC, TP> source, Quantization mode = Quantization.Octree, int maxColors = 256)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
+        public static Image<TColor, TPacked> Quantize<TColor, TPacked>(this Image<TColor, TPacked> source, Quantization mode = Quantization.Octree, int maxColors = 256)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            IQuantizer<T, TC, TP> quantizer;
+            IQuantizer<TColor, TPacked> quantizer;
             switch (mode)
             {
                 case Quantization.Wu:
-                    quantizer = new WuQuantizer<T, TC, TP>();
+                    quantizer = new WuQuantizer<TColor, TPacked>();
                     break;
 
                 case Quantization.Palette:
-                    quantizer = new PaletteQuantizer<T, TC, TP>();
+                    quantizer = new PaletteQuantizer<TColor, TPacked>();
                     break;
 
                 default:
-                    quantizer = new OctreeQuantizer<T, TC, TP>();
+                    quantizer = new OctreeQuantizer<TColor, TPacked>();
                     break;
             }
 
@@ -49,19 +47,17 @@ namespace ImageProcessorCore
         /// <summary>
         /// Applies quantization to the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="quantizer">The quantizer to apply to perform the operation.</param>
         /// <param name="maxColors">The maximum number of colors to return.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> Quantize<T, TC, TP>(this Image<T, TC, TP> source, IQuantizer<T, TC, TP> quantizer, int maxColors)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
+        public static Image<TColor, TPacked> Quantize<TColor, TPacked>(this Image<TColor, TPacked> source, IQuantizer<TColor, TPacked> quantizer, int maxColors)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            QuantizedImage<T, TC, TP> quantizedImage = quantizer.Quantize(source, maxColors);
+            QuantizedImage<TColor, TPacked> quantizedImage = quantizer.Quantize(source, maxColors);
             source.SetPixels(source.Width, source.Height, quantizedImage.ToImage().Pixels);
             return source;
         }

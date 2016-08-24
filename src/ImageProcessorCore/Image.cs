@@ -13,7 +13,7 @@ namespace ImageProcessorCore
     /// packed into a single unsigned integer value.
     /// </summary>
     [DebuggerDisplay("Image: {Width}x{Height}")]
-    public class Image : Image<PixelAccessor<Color, uint>, Color, uint>
+    public class Image : Image<Color, uint>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Image"/> class

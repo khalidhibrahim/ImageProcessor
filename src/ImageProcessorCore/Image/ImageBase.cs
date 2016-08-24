@@ -12,24 +12,22 @@ namespace ImageProcessorCore
     /// The base class of all images. Encapsulates the basic properties and methods required to manipulate 
     /// images in different pixel formats.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
     [DebuggerDisplay("Image: {Width}x{Height}")]
-    public abstract class ImageBase<T, TC, TP> : IImageBase<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    public abstract class ImageBase<TColor, TPacked> : IImageBase<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageBase{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="ImageBase{TColor, TPacked}"/> class.
         /// </summary>
         protected ImageBase()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageBase{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="ImageBase{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="width">The width of the image in pixels.</param>
         /// <param name="height">The height of the image in pixels.</param>
@@ -43,19 +41,19 @@ namespace ImageProcessorCore
 
             this.Width = width;
             this.Height = height;
-            this.Pixels = new TC[width * height];
+            this.Pixels = new TColor[width * height];
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageBase{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="ImageBase{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="other">
-        /// The other <see cref="ImageBase{T,TC,TP}"/> to create this instance from.
+        /// The other <see cref="ImageBase{TColor, TPacked}"/> to create this instance from.
         /// </param>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown if the given <see cref="ImageBase{T,TC,TP}"/> is null.
+        /// Thrown if the given <see cref="ImageBase{TColor, TPacked}"/> is null.
         /// </exception>
-        protected ImageBase(ImageBase<T, TC, TP> other)
+        protected ImageBase(ImageBase<TColor, TPacked> other)
         {
             Guard.NotNull(other, nameof(other), "Other image cannot be null.");
 
@@ -64,7 +62,7 @@ namespace ImageProcessorCore
             this.CopyProperties(other);
 
             // Copy the pixels.
-            this.Pixels = new TC[this.Width * this.Height];
+            this.Pixels = new TColor[this.Width * this.Height];
             Array.Copy(other.Pixels, this.Pixels, other.Pixels.Length);
         }
 
@@ -75,7 +73,7 @@ namespace ImageProcessorCore
         public int MaxHeight { get; set; } = int.MaxValue;
 
         /// <inheritdoc/>
-        public TC[] Pixels { get; private set; }
+        public TColor[] Pixels { get; private set; }
 
         /// <inheritdoc/>
         public int Width { get; private set; }
@@ -96,7 +94,7 @@ namespace ImageProcessorCore
         public int FrameDelay { get; set; }
 
         /// <inheritdoc/>
-        public void SetPixels(int width, int height, TC[] pixels)
+        public void SetPixels(int width, int height, TColor[] pixels)
         {
             if (width <= 0)
             {
@@ -119,7 +117,7 @@ namespace ImageProcessorCore
         }
 
         /// <inheritdoc/>
-        public void ClonePixels(int width, int height, TC[] pixels)
+        public void ClonePixels(int width, int height, TColor[] pixels)
         {
             if (width <= 0)
             {
@@ -140,24 +138,24 @@ namespace ImageProcessorCore
             this.Height = height;
 
             // Copy the pixels.
-            this.Pixels = new TC[pixels.Length];
+            this.Pixels = new TColor[pixels.Length];
             Array.Copy(pixels, this.Pixels, pixels.Length);
         }
 
         /// <inheritdoc/>
-        public T Lock()
+        public PixelAccessor<TColor, TPacked> Lock()
         {
-            return (T) Activator.CreateInstance(typeof(T), this);
+            return new PixelAccessor<TColor, TPacked>(this);
             //return (T)typeof(T).GetInstance((ImageBase<IPixelAccessor<T, TP>, T, TP>)this);
         }
 
         /// <summary>
-        /// Copies the properties from the other <see cref="ImageBase{T,TC,TP}"/>.
+        /// Copies the properties from the other <see cref="ImageBase{TColor, TPacked}"/>.
         /// </summary>
         /// <param name="other">
-        /// The other <see cref="ImageBase{T,TC,TP}"/> to copy the properties from.
+        /// The other <see cref="ImageBase{TColor, TPacked}"/> to copy the properties from.
         /// </param>
-        protected void CopyProperties(ImageBase<T, TC, TP> other)
+        protected void CopyProperties(ImageBase<TColor, TPacked> other)
         {
             this.Quality = other.Quality;
             this.FrameDelay = other.FrameDelay;

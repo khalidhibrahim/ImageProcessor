@@ -8,26 +8,24 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Flips an image by the given instructions.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to rotate, flip, or both.</param>
         /// <param name="flipType">The <see cref="FlipType"/> to perform the flip.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TC, TP> Flip<T, TC, TP>(this Image<T, TC, TP> source, FlipType flipType, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public static Image<TColor, TPacked> Flip<TColor, TPacked>(this Image<TColor, TPacked> source, FlipType flipType, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            FlipProcessor<T, TC, TP> processor = new FlipProcessor<T, TC, TP>(flipType);
+            FlipProcessor<TColor, TPacked> processor = new FlipProcessor<TColor, TPacked>(flipType);
             processor.OnProgress += progressHandler;
 
             try

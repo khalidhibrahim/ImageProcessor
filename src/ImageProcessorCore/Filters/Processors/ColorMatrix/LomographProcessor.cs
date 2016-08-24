@@ -10,13 +10,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Converts the colors of the image recreating an old Lomograph effect.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class LomographProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class LomographProcessor<TColor, TPacked> : ColorMatrixFilter<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <inheritdoc/>
         public override Matrix4x4 Matrix => new Matrix4x4()
@@ -30,11 +28,11 @@ namespace ImageProcessorCore.Processors
         };
 
         /// <inheritdoc/>
-        protected override void AfterApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void AfterApply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
-            TC packed = default(TC);
+            TColor packed = default(TColor);
             packed.PackFromBytes(0, 10, 0, 255); // Very dark (mostly black) lime green.
-            new VignetteProcessor<T, TC, TP> { VignetteColor = packed }.Apply(target, target, sourceRectangle);
+            new VignetteProcessor<TColor, TPacked> { VignetteColor = packed }.Apply(target, target, sourceRectangle);
         }
     }
 }

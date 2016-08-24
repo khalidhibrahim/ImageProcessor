@@ -10,15 +10,13 @@ namespace ImageProcessorCore.Processors
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An <see cref="IImageProcessor{T,TC,TP}"/> to pixelate the colors of an <see cref="Image{T, TC, TP}"/>.
+    /// An <see cref="IImageProcessor{TColor, TPacked}"/> to pixelate the colors of an <see cref="Image{TColor, TPacked}"/>.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class PixelateProcessor<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class PixelateProcessor<TColor, TPacked> : ImageProcessor<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PixelateProcessor{T,TP}"/> class.
@@ -39,7 +37,7 @@ namespace ImageProcessorCore.Processors
         public int Value { get; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
@@ -66,8 +64,8 @@ namespace ImageProcessorCore.Processors
             // Get the range on the y-plane to choose from.
             IEnumerable<int> range = EnumerableExtensions.SteppedRange(minY, i => i < maxY, size);
 
-            using (T sourcePixels = source.Lock())
-            using (T targetPixels = target.Lock())
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
+            using (PixelAccessor<TColor, TPacked> targetPixels = target.Lock())
             {
                 Parallel.ForEach(
                     range,
@@ -95,7 +93,7 @@ namespace ImageProcessorCore.Processors
 
                                 // Get the pixel color in the centre of the soon to be pixelated area.
                                 // ReSharper disable AccessToDisposedClosure
-                                TC pixel = sourcePixels[offsetX + offsetPx, offsetY + offsetPy];
+                                TColor pixel = sourcePixels[offsetX + offsetPx, offsetY + offsetPy];
 
                                 // For each pixel in the pixelate size, set it to the centre color.
                                 for (int l = offsetY; l < offsetY + size && l < maxY; l++)

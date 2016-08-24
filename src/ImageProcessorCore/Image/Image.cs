@@ -18,14 +18,12 @@ namespace ImageProcessorCore
     /// <summary>
     /// Encapsulates an image, which consists of the pixel data for a graphics image and its attributes.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
     [DebuggerDisplay("Image: {Width}x{Height}")]
-    public class Image<T, TC, TP> : ImageBase<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    public class Image<TColor, TPacked> : ImageBase<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// The default horizontal resolution value (dots per inch) in x direction.
@@ -40,7 +38,7 @@ namespace ImageProcessorCore
         public const double DefaultVerticalResolution = 96;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Image{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="Image{TColor, TPacked}"/> class.
         /// </summary>
         public Image()
         {
@@ -48,7 +46,7 @@ namespace ImageProcessorCore
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Image{T,TC,TP}"/> class
+        /// Initializes a new instance of the <see cref="Image{TColor, TPacked}"/> class
         /// with the height and the width of the image.
         /// </summary>
         /// <param name="width">The width of the image in pixels.</param>
@@ -60,7 +58,7 @@ namespace ImageProcessorCore
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Image{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="Image{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="stream">
         /// The stream containing image information.
@@ -73,19 +71,19 @@ namespace ImageProcessorCore
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Image{T,TC,TP}"/> class
+        /// Initializes a new instance of the <see cref="Image{TColor, TPacked}"/> class
         /// by making a copy from another image.
         /// </summary>
         /// <param name="other">The other image, where the clone should be made from.</param>
         /// <exception cref="System.ArgumentNullException"><paramref name="other"/> is null.</exception>
-        public Image(Image<T, TC, TP> other)
+        public Image(Image<TColor, TPacked> other)
             : base(other)
         {
-            foreach (ImageFrame<T, TC, TP> frame in other.Frames)
+            foreach (ImageFrame<TColor, TPacked> frame in other.Frames)
             {
                 if (frame != null)
                 {
-                    this.Frames.Add(new ImageFrame<T, TC, TP>(frame));
+                    this.Frames.Add(new ImageFrame<TColor, TPacked>(frame));
                 }
             }
 
@@ -171,7 +169,7 @@ namespace ImageProcessorCore
         /// Gets the other frames for the animation.
         /// </summary>
         /// <value>The list of frame images.</value>
-        public IList<ImageFrame<T, TC, TP>> Frames { get; } = new List<ImageFrame<T, TC, TP>>();
+        public IList<ImageFrame<TColor, TPacked>> Frames { get; } = new List<ImageFrame<TColor, TPacked>>();
 
         /// <summary>
         /// Gets the list of properties for storing meta information about this image.
@@ -194,7 +192,7 @@ namespace ImageProcessorCore
         /// </summary>
         /// <param name="stream">The stream to save the image to.</param>
         /// <exception cref="System.ArgumentNullException">Thrown if the stream is null.</exception>
-        public Image<T, TC, TP> Save(Stream stream)
+        public Image<TColor, TPacked> Save(Stream stream)
         {
             Guard.NotNull(stream, nameof(stream));
             this.CurrentImageFormat.Encoder.Encode(this, stream);
@@ -207,7 +205,7 @@ namespace ImageProcessorCore
         /// <param name="stream">The stream to save the image to.</param>
         /// <param name="format">The format to save the image as.</param>
         /// <exception cref="System.ArgumentNullException">Thrown if the stream is null.</exception>
-        public Image<T, TC, TP> Save(Stream stream, IImageFormat format)
+        public Image<TColor, TPacked> Save(Stream stream, IImageFormat format)
         {
             Guard.NotNull(stream, nameof(stream));
             format.Encoder.Encode(this, stream);
@@ -220,7 +218,7 @@ namespace ImageProcessorCore
         /// <param name="stream">The stream to save the image to.</param>
         /// <param name="encoder">The encoder to save the image with.</param>
         /// <exception cref="System.ArgumentNullException">Thrown if the stream is null.</exception>
-        public Image<T, TC, TP> Save(Stream stream, IImageEncoder encoder)
+        public Image<TColor, TPacked> Save(Stream stream, IImageEncoder encoder)
         {
             Guard.NotNull(stream, nameof(stream));
             encoder.Encode(this, stream);
@@ -243,12 +241,12 @@ namespace ImageProcessorCore
         }
 
         /// <summary>
-        /// Copies the properties from the other <see cref="Image{T, TC, TP}"/>.
+        /// Copies the properties from the other <see cref="Image{TColor, TPacked}"/>.
         /// </summary>
         /// <param name="other">
-        /// The other <see cref="Image{T, TC, TP}"/> to copy the properties from.
+        /// The other <see cref="Image{TColor, TPacked}"/> to copy the properties from.
         /// </param>
-        internal void CopyProperties(Image<T, TC, TP> other)
+        internal void CopyProperties(Image<TColor, TPacked> other)
         {
             base.CopyProperties(other);
 

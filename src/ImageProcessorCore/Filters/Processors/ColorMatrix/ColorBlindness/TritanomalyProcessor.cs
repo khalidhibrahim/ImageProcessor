@@ -10,13 +10,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Converts the colors of the image recreating Tritanomaly (Blue-Weak) color blindness.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class TritanomalyProcessor<T, TC, TP> : ColorMatrixFilter<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class TritanomalyProcessor<TColor, TPacked> : ColorMatrixFilter<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <inheritdoc/>
         public override Matrix4x4 Matrix => new Matrix4x4()

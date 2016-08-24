@@ -10,13 +10,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Applies a Gaussian sharpening filter to the image.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class GuassianSharpenProcessor<T, TC, TP> : Convolution2PassFilter<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class GuassianSharpenProcessor<TColor, TPacked> : Convolution2PassFilter<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// The maximum size of the kernal in either direction.
@@ -39,7 +37,7 @@ namespace ImageProcessorCore.Processors
         private float[,] kernelX;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="sigma">
         /// The 'sigma' value representing the weight of the sharpening.
@@ -51,7 +49,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="radius">
         /// The 'radius' value representing the size of the area to sample.
@@ -63,7 +61,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{T,TC,TP}"/> class.
+        /// Initializes a new instance of the <see cref="GuassianSharpenProcessor{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="sigma">
         /// The 'sigma' value representing the weight of the sharpen.
@@ -85,7 +83,7 @@ namespace ImageProcessorCore.Processors
         public override float[,] KernelY => this.kernelY;
 
         /// <inheritdoc/>
-        protected override void OnApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void OnApply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
             if (this.kernelY == null)
             {

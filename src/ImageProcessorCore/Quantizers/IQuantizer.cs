@@ -8,13 +8,11 @@ namespace ImageProcessorCore.Quantizers
     /// <summary>
     /// Provides methods for allowing quantization of images pixels.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public interface IQuantizer<T, TC, TP> : IQuantizer
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public interface IQuantizer<TColor, TPacked> : IQuantizer
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// Quantize an image and return the resulting output pixels.
@@ -24,7 +22,7 @@ namespace ImageProcessorCore.Quantizers
         /// <returns>
         /// A <see cref="T:QuantizedImage"/> representing a quantized version of the image pixels.
         /// </returns>
-        QuantizedImage<T, TC, TP> Quantize(ImageBase<T, TC, TP> image, int maxColors);
+        QuantizedImage<TColor, TPacked> Quantize(ImageBase<TColor, TPacked> image, int maxColors);
     }
 
     /// <summary>

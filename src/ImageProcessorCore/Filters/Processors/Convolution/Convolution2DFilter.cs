@@ -12,13 +12,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Defines a filter that uses two one-dimensional matrices to perform convolution against an image.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public abstract class Convolution2DFilter<T, TC, TP> : ImageProcessor<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public abstract class Convolution2DFilter<TColor, TPacked> : ImageProcessor<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// Gets the horizontal gradient operator.
@@ -31,7 +29,7 @@ namespace ImageProcessorCore.Processors
         public abstract float[,] KernelY { get; }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             float[,] kernelX = this.KernelX;
             float[,] kernelY = this.KernelY;
@@ -49,8 +47,8 @@ namespace ImageProcessorCore.Processors
             int maxY = sourceBottom - 1;
             int maxX = endX - 1;
 
-            using (T sourcePixels = source.Lock())
-            using (T targetPixels = target.Lock())
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
+            using (PixelAccessor<TColor, TPacked> targetPixels = target.Lock())
             {
                 Parallel.For(
                 startY,
@@ -110,7 +108,7 @@ namespace ImageProcessorCore.Processors
                             float blue = (float)Math.Sqrt((bX * bX) + (bY * bY));
 
                             Vector4 targetColor = targetPixels[x, y].ToVector4();
-                            TC packed = default(TC);
+                            TColor packed = default(TColor);
                             packed.PackFromVector4(new Vector4(red, green, blue, targetColor.Z));
                             targetPixels[x, y] = packed;
                         }

@@ -13,13 +13,11 @@ namespace ImageProcessorCore.Processors
     /// <summary>
     /// Provides methods that allow the rotating of images.
     /// </summary>
-    /// <typeparam name="T">The pixel accessor.</typeparam>
-    /// <typeparam name="TC">The pixel format.</typeparam>
-    /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-    public class RotateProcessor<T, TC, TP> : Matrix3x2Processor<T, TC, TP>
-        where T : IPixelAccessor<TC, TP>
-        where TC : IPackedVector<TP>
-        where TP : struct
+    /// <typeparam name="TColor">The pixel format.</typeparam>
+    /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+    public class RotateProcessor<TColor, TPacked> : Matrix3x2Processor<TColor, TPacked>
+        where TColor : IPackedVector<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// The tranform matrix to apply.
@@ -37,7 +35,7 @@ namespace ImageProcessorCore.Processors
         public bool Expand { get; set; } = true;
 
         /// <inheritdoc/>
-        protected override void OnApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle)
+        protected override void OnApply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle)
         {
             const float Epsilon = .0001F;
 
@@ -54,7 +52,7 @@ namespace ImageProcessorCore.Processors
         }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
+        protected override void Apply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source, Rectangle targetRectangle, Rectangle sourceRectangle, int startY, int endY)
         {
             if (OptimizedApply(target, source))
             {
@@ -65,8 +63,8 @@ namespace ImageProcessorCore.Processors
             int width = target.Width;
             Matrix3x2 matrix = GetCenteredMatrix(target, source, this.processMatrix);
 
-            using (T sourcePixels = source.Lock())
-            using (T targetPixels = target.Lock())
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
+            using (PixelAccessor<TColor, TPacked> targetPixels = target.Lock())
             {
                 Parallel.For(
                     0,
@@ -94,7 +92,7 @@ namespace ImageProcessorCore.Processors
         /// <param name="target">The target image.</param>
         /// <param name="source">The source image.</param>
         /// <returns></returns>
-        private bool OptimizedApply(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source)
+        private bool OptimizedApply(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source)
         {
             const float Epsilon = .0001F;
             if (Math.Abs(Angle) < Epsilon)
@@ -129,14 +127,14 @@ namespace ImageProcessorCore.Processors
         /// </summary>
         /// <param name="target">The target image.</param>
         /// <param name="source">The source image.</param>
-        private void Rotate270(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source)
+        private void Rotate270(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source)
         {
             int width = source.Width;
             int height = source.Height;
-            Image<T, TC, TP> temp = new Image<T, TC, TP>(height, width);
+            Image<TColor, TPacked> temp = new Image<TColor, TPacked>(height, width);
 
-            using (T sourcePixels = source.Lock())
-            using (T tempPixels = temp.Lock())
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
+            using (PixelAccessor<TColor, TPacked> tempPixels = temp.Lock())
             {
                 Parallel.For(
                     0,
@@ -164,13 +162,13 @@ namespace ImageProcessorCore.Processors
         /// </summary>
         /// <param name="target">The target image.</param>
         /// <param name="source">The source image.</param>
-        private void Rotate180(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source)
+        private void Rotate180(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source)
         {
             int width = source.Width;
             int height = source.Height;
 
-            using (T sourcePixels = source.Lock())
-            using (T targetPixels = target.Lock())
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
+            using (PixelAccessor<TColor, TPacked> targetPixels = target.Lock())
             {
                 Parallel.For(
                     0,
@@ -195,14 +193,14 @@ namespace ImageProcessorCore.Processors
         /// </summary>
         /// <param name="target">The target image.</param>
         /// <param name="source">The source image.</param>
-        private void Rotate90(ImageBase<T, TC, TP> target, ImageBase<T, TC, TP> source)
+        private void Rotate90(ImageBase<TColor, TPacked> target, ImageBase<TColor, TPacked> source)
         {
             int width = source.Width;
             int height = source.Height;
-            Image<T, TC, TP> temp = new Image<T, TC, TP>(height, width);
+            Image<TColor, TPacked> temp = new Image<TColor, TPacked>(height, width);
 
-            using (T sourcePixels = source.Lock())
-            using (T tempPixels = temp.Lock())
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
+            using (PixelAccessor<TColor, TPacked> tempPixels = temp.Lock())
             {
                 Parallel.For(
                     0,

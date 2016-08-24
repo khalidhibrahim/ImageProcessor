@@ -115,13 +115,11 @@ namespace ImageProcessorCore
         /// <summary>
         /// Returns the thumbnail in the EXIF profile when available.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
-        public Image<T, TC, TP> CreateThumbnail<T, TC, TP>()
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
+        public Image<TColor, TPacked> CreateThumbnail<TColor, TPacked>()
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             this.InitializeValues();
 
@@ -137,7 +135,7 @@ namespace ImageProcessorCore
 
             using (MemoryStream memStream = new MemoryStream(this.data, this.thumbnailOffset, this.thumbnailLength))
             {
-                return new Image<T, TC, TP>(memStream);
+                return new Image<TColor, TPacked>(memStream);
             }
         }
 

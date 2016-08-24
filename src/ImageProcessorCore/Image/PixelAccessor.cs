@@ -14,7 +14,7 @@ namespace ImageProcessorCore
     /// </summary>
     /// <typeparam name="TColor">The pixel format.</typeparam>
     /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
-    public unsafe class PixelAccessor<TColor, TPacked> : IDisposable, IPixelAccessor<TColor, TPacked>
+    public unsafe class PixelAccessor<TColor, TPacked> : IDisposable
         where TColor : IPackedVector<TPacked>
         where TPacked : struct
     {
@@ -48,7 +48,7 @@ namespace ImageProcessorCore
         /// Initializes a new instance of the <see cref="PixelAccessor{TColor,TPacked}"/> class.
         /// </summary>
         /// <param name="image">The image to provide pixel access for.</param>
-        public PixelAccessor(ImageBase<PixelAccessor<TColor, TPacked>, TColor, TPacked> image)
+        public PixelAccessor(ImageBase<TColor, TPacked> image)
         {
             Guard.NotNull(image, nameof(image));
             Guard.MustBeGreaterThan(image.Width, 0, "image width");

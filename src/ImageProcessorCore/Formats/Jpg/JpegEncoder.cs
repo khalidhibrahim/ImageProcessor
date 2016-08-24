@@ -78,10 +78,9 @@ namespace ImageProcessorCore.Formats
         }
 
         /// <inheritdoc/>
-        public void Encode<T, TC, TP>(Image<T, TC, TP> image, Stream stream)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public void Encode<TColor, TPacked>(Image<TColor, TPacked> image, Stream stream)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             JpegEncoderCore encode = new JpegEncoderCore();
             if (this.subsampleSet)

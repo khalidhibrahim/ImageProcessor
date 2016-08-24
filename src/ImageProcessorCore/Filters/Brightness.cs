@@ -8,24 +8,22 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Alters the brightness component of the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="amount">The new brightness of the image. Must be between -100 and 100.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> Brightness<T, TC, TP>(this Image<T, TC, TP> source, int amount, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
+        public static Image<TColor, TPacked> Brightness<TColor, TPacked>(this Image<TColor, TPacked> source, int amount, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             return Brightness(source, amount, source.Bounds, progressHandler);
         }
@@ -33,22 +31,20 @@ namespace ImageProcessorCore
         /// <summary>
         /// Alters the brightness component of the image.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image this method extends.</param>
         /// <param name="amount">The new brightness of the image. Must be between -100 and 100.</param>
         /// <param name="rectangle">
         /// The <see cref="Rectangle"/> structure that specifies the portion of the image object to alter.
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/>.</returns>
-        public static Image<T, TC, TP> Brightness<T, TC, TP>(this Image<T, TC, TP> source, int amount, Rectangle rectangle, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
+        public static Image<TColor, TPacked> Brightness<TColor, TPacked>(this Image<TColor, TPacked> source, int amount, Rectangle rectangle, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
-            BrightnessProcessor<T, TC, TP> processor = new BrightnessProcessor<T, TC, TP>(amount);
+            BrightnessProcessor<TColor, TPacked> processor = new BrightnessProcessor<TColor, TPacked>(amount);
             processor.OnProgress += progressHandler;
 
             try

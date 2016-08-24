@@ -8,25 +8,23 @@ namespace ImageProcessorCore
     using Processors;
 
     /// <summary>
-    /// Extension methods for the <see cref="Image{T, TC, TP}"/> type.
+    /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
     /// </summary>
     public static partial class ImageExtensions
     {
         /// <summary>
         /// Crops an image to the given width and height.
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to resize.</param>
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
-        /// <returns>The <see cref="Image{T, TC, TP}"/></returns>
-        public static Image<T, TC, TP> Crop<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        /// <returns>The <see cref="Image{TColor, TPacked}"/></returns>
+        public static Image<TColor, TPacked> Crop<TColor, TPacked>(this Image<TColor, TPacked> source, int width, int height, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             return Crop(source, width, height, source.Bounds, progressHandler);
         }
@@ -38,9 +36,8 @@ namespace ImageProcessorCore
         /// area within the source is resized performing a zoomed crop.
         /// </remarks>
         /// </summary>
-        /// <typeparam name="T">The pixel accessor.</typeparam>
-        /// <typeparam name="TC">The pixel format.</typeparam>
-        /// <typeparam name="TP">The packed format. <example>uint, long, float.</example></typeparam>
+            /// <typeparam name="TColor">The pixel format.</typeparam>
+        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
         /// <param name="source">The image to crop.</param>
         /// <param name="width">The target image width.</param>
         /// <param name="height">The target image height.</param>
@@ -49,10 +46,9 @@ namespace ImageProcessorCore
         /// </param>
         /// <param name="progressHandler">A delegate which is called as progress is made processing the image.</param>
         /// <returns>The <see cref="Image"/></returns>
-        public static Image<T, TC, TP> Crop<T, TC, TP>(this Image<T, TC, TP> source, int width, int height, Rectangle sourceRectangle, ProgressEventHandler progressHandler = null)
-            where T : IPixelAccessor<TC, TP>
-            where TC : IPackedVector<TP>
-            where TP : struct
+        public static Image<TColor, TPacked> Crop<TColor, TPacked>(this Image<TColor, TPacked> source, int width, int height, Rectangle sourceRectangle, ProgressEventHandler progressHandler = null)
+                where TColor : IPackedVector<TPacked>
+            where TPacked : struct
         {
             Guard.MustBeGreaterThan(width, 0, nameof(width));
             Guard.MustBeGreaterThan(height, 0, nameof(height));
@@ -64,7 +60,7 @@ namespace ImageProcessorCore
                 source = source.Resize(sourceRectangle.Width, sourceRectangle.Height);
             }
 
-            CropProcessor<T, TC, TP> processor = new CropProcessor<T, TC, TP>();
+            CropProcessor<TColor, TPacked> processor = new CropProcessor<TColor, TPacked>();
             processor.OnProgress += progressHandler;
 
             try
