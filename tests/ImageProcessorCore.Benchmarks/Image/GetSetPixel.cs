@@ -24,7 +24,7 @@
         public CoreColor GetSetPixelCore()
         {
             CoreImage image = new CoreImage(400, 400);
-            using (ColorPixelAccessor imagePixels = image.Lock())
+            using (PixelAccessor<CoreColor, uint> imagePixels = image.Lock())
             {
                 imagePixels[200, 200] = CoreColor.White;
                 return imagePixels[200, 200];
